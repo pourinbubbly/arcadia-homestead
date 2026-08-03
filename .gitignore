@@ -1,0 +1,4 @@
+screenshot*.png
+*.log
+__pycache__/
+.tempmediaStorage/
