@@ -420,7 +420,7 @@ html_content = """<!DOCTYPE html>
       padding: 10px 18px; border-radius: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
     }
 
-    .ready-count-badge { font-family: var(--font-pixel); font-size: 10px; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .ready-count-badge { font-family: var(--font-pixel); font-size: 10px; color: #fff; display: flex; align-items: gap: 8px; }
 
     .end-day-btn {
       font-family: var(--font-pixel); font-size: 10px; padding: 10px 16px;
@@ -945,12 +945,13 @@ html_content = """<!DOCTYPE html>
       renderGameWorld();
     }
 
-    /* PERFECTLY ALIGNED & BALANCED FLOATING ISOMETRIC HERO STAGE */
+    /* PERFECTLY ALIGNED & BALANCED FLOATING ISOMETRIC HERO STAGE WITH DYNAMIC HARVEST FLOATING ORBIT */
     function initHeroShowcase() {
       const hCanvas = document.getElementById('heroCanvas'); if (!hCanvas) return;
       const hCtx = hCanvas.getContext('2d'); hCtx.imageSmoothingEnabled = false;
 
       let tick = 0;
+      const floatingHarvests = ['🌾', '🥕', '🍅', '🍓', '🎃', '🪙', '💎'];
 
       function renderHeroFrame() {
         tick += 0.02;
@@ -958,57 +959,63 @@ html_content = """<!DOCTYPE html>
 
         const floatY = Math.sin(tick) * 8;
 
-        const gradient = hCtx.createRadialGradient(360, 220 + floatY, 40, 360, 220 + floatY, 320);
-        gradient.addColorStop(0, 'rgba(253, 224, 71, 0.2)');
+        // Ambient radial glow background
+        const gradient = hCtx.createRadialGradient(360, 220 + floatY, 40, 360, 220 + floatY, 340);
+        gradient.addColorStop(0, 'rgba(253, 224, 71, 0.22)');
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         hCtx.fillStyle = gradient;
         hCtx.fillRect(0, 0, 720, 440);
 
         const centerX = 360, centerY = 210 + floatY;
-        const tileW = 60, tileH = 30;
+        const tileW = 76, tileH = 38; // Increased tile size to fit top grass surface perfectly
 
+        // 1. Dirt Base Layer (Underneath Grass)
         hCtx.fillStyle = '#2c1609';
         hCtx.beginPath();
-        hCtx.moveTo(centerX, centerY - 110);
-        hCtx.lineTo(centerX + 270, centerY + 20);
-        hCtx.lineTo(centerX, centerY + 150);
-        hCtx.lineTo(centerX - 270, centerY + 20);
+        hCtx.moveTo(centerX, centerY - 120);
+        hCtx.lineTo(centerX + 235, centerY);
+        hCtx.lineTo(centerX, centerY + 120);
+        hCtx.lineTo(centerX - 235, centerY);
         hCtx.closePath();
         hCtx.fill();
 
+        // 2. Dirt 3D Side Walls
         hCtx.fillStyle = '#1c0a02';
         hCtx.beginPath();
-        hCtx.moveTo(centerX - 270, centerY + 20);
-        hCtx.lineTo(centerX, centerY + 150);
-        hCtx.lineTo(centerX, centerY + 185);
-        hCtx.lineTo(centerX - 270, centerY + 55);
+        hCtx.moveTo(centerX - 235, centerY);
+        hCtx.lineTo(centerX, centerY + 120);
+        hCtx.lineTo(centerX, centerY + 160);
+        hCtx.lineTo(centerX - 235, centerY + 40);
         hCtx.closePath();
         hCtx.fill();
 
         hCtx.fillStyle = '#3a1b07';
         hCtx.beginPath();
-        hCtx.moveTo(centerX + 270, centerY + 20);
-        hCtx.lineTo(centerX, centerY + 150);
-        hCtx.lineTo(centerX, centerY + 185);
-        hCtx.lineTo(centerX + 270, centerY + 55);
+        hCtx.moveTo(centerX + 235, centerY);
+        hCtx.lineTo(centerX, centerY + 120);
+        hCtx.lineTo(centerX, centerY + 160);
+        hCtx.lineTo(centerX + 235, centerY + 40);
         hCtx.closePath();
         hCtx.fill();
 
+        // 3. Grass Top Layer (Balanced Green Margin Around 5x5 Grid)
         hCtx.fillStyle = '#599632';
         hCtx.beginPath();
-        hCtx.moveTo(centerX, centerY - 115);
-        hCtx.lineTo(centerX + 270, centerY + 15);
-        hCtx.lineTo(centerX, centerY + 140);
-        hCtx.lineTo(centerX - 270, centerY + 15);
+        hCtx.moveTo(centerX, centerY - 126);
+        hCtx.lineTo(centerX + 235, centerY - 6);
+        hCtx.lineTo(centerX, centerY + 114);
+        hCtx.lineTo(centerX - 235, centerY - 6);
         hCtx.closePath();
         hCtx.fill();
 
+        // 4. PERFECT 5x5 ISOMETRIC GRID (Centering Math: Grid origin centered at (centerX, centerY - 6))
         const crops = ['🌾', '🥕', '🍅', '🍓', '🎃'];
         for (let r = 0; r < 5; r++) {
           for (let c = 0; c < 5; c++) {
             const isoX = centerX + (c - r) * (tileW / 2);
-            const isoY = centerY + 12 + (c + r - 4) * (tileH / 2);
+            const isoY = centerY - 6 + (c + r - 4) * (tileH / 2);
 
+            // Draw isometric dirt plot
             hCtx.fillStyle = '#3b2313';
             hCtx.beginPath();
             hCtx.moveTo(isoX, isoY - tileH / 2);
@@ -1020,18 +1027,29 @@ html_content = """<!DOCTYPE html>
 
             hCtx.strokeStyle = '#1a0f07'; hCtx.lineWidth = 2; hCtx.stroke();
 
+            // Render crop icon cleanly centered inside each isometric polygon
             const idx = r * 5 + c;
             if (idx % 2 === 0 || idx === 7 || idx === 17) {
               const cropIcon = crops[idx % crops.length];
-              hCtx.font = '20px sans-serif';
-              hCtx.fillText(cropIcon, isoX - 10, isoY + 6);
+              hCtx.font = '22px sans-serif';
+              hCtx.fillText(cropIcon, isoX - 11, isoY + 7);
             }
           }
         }
 
-        const coinY = centerY - 135 + Math.sin(tick * 1.5) * 10;
-        hCtx.font = '36px "Press Start 2P"';
-        hCtx.fillText('🪙', centerX - 18, coinY);
+        // 5. DYNAMIC FLOATING HARVEST CROPS & COIN ORBIT ABOVE ISLAND!
+        const orbitR = 140;
+        for (let i = 0; i < floatingHarvests.length; i++) {
+          const angle = tick * 0.8 + (i * Math.PI * 2 / floatingHarvests.length);
+          const itemX = centerX + Math.cos(angle) * orbitR;
+          const itemY = centerY - 130 + Math.sin(angle) * 22 + Math.sin(tick * 2 + i) * 6;
+          const itemScale = 0.85 + (Math.sin(angle) + 1) * 0.2;
+
+          hCtx.save();
+          hCtx.font = `${Math.floor(26 * itemScale)}px "Press Start 2P", sans-serif`;
+          hCtx.fillText(floatingHarvests[i], itemX - 14, itemY);
+          hCtx.restore();
+        }
 
         requestAnimationFrame(renderHeroFrame);
       }
@@ -1759,4 +1777,4 @@ html_content = """<!DOCTYPE html>
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("DEFAULT LANGUAGE SET TO ENGLISH SUCCESSFULLY!")
+print("PERFECTLY ALIGNED ISOMETRIC SOIL GRID & DYNAMIC FLOATING HARVEST CROPS UPDATED SUCCESSFULLY!")
