@@ -1,11 +1,11 @@
 html_content = """<!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arcadia Homestead - Web3 Pixel Farming on Arc Testnet</title>
 
-  <meta name="description" content="Arcadia Homestead - Arc Testnet üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonu.">
+  <meta name="description" content="Arcadia Homestead - Web3 5x5 Grid Stardew-aesthetic pixel farming simulation running on Arc Testnet.">
 
   <!-- Google Fonts: Stardew Retro Pixel Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -463,10 +463,10 @@ html_content = """<!DOCTYPE html>
       <div style="font-size: 48px;">🚜</div>
       <div class="wallet-modal-title">ARCADIA HOMESTEAD</div>
       <div class="wallet-modal-desc">
-        Oyuna giriş yapmak ve Arc Testnet üzerinde native USDC kazanmak için lütfen Web3 cüzdanınızı bağlayın.
+        Please connect your Web3 wallet to enter the game and earn native USDC on Arc Testnet.
       </div>
-      <button class="stardew-btn" onclick="connectWalletFromModal()">🟢 CÜZDANI BAĞLA / CONNECT WALLET</button>
-      <button style="background:transparent; border:none; color:var(--text-muted); font-family:var(--font-pixel); font-size:10px; cursor:pointer;" onclick="closeWalletModal()">KAPAT / CANCEL</button>
+      <button class="stardew-btn" onclick="connectWalletFromModal()">🟢 CONNECT WALLET</button>
+      <button style="background:transparent; border:none; color:var(--text-muted); font-family:var(--font-pixel); font-size:10px; cursor:pointer;" onclick="closeWalletModal()">CANCEL</button>
     </div>
   </div>
 
@@ -485,18 +485,18 @@ html_content = """<!DOCTYPE html>
     </div>
 
     <ul class="nav-links">
-      <li><a href="#interactive-showcase" id="nav-showcase">Oyun Tanıtımı</a></li>
+      <li><a href="#interactive-showcase" id="nav-showcase">Game Intro</a></li>
       <li><a href="#specs" id="nav-specs">GameFi Specs</a></li>
       <li><a href="#passes" id="nav-passes">Passes & Pricing</a></li>
-      <li><a href="javascript:void(0)" onclick="handlePlayGameClick()" id="nav-play">Oyunu Oyna</a></li>
+      <li><a href="javascript:void(0)" onclick="handlePlayGameClick()" id="nav-play">Play Game</a></li>
     </ul>
 
-    <!-- 5-Language Selector -->
+    <!-- 5-Language Selector (Default: EN - English) -->
     <div class="lang-switcher">
       🌐
       <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+        <option value="EN" selected>EN - English</option>
         <option value="TR">TR - Türkçe</option>
-        <option value="EN">EN - English</option>
         <option value="ES">ES - Español</option>
         <option value="ZH">ZH - 中文</option>
         <option value="JA">JA - 日本語</option>
@@ -508,7 +508,7 @@ html_content = """<!DOCTYPE html>
         <span class="net-dot"></span>
         <span>ARC TESTNET</span>
       </div>
-      <button id="btn-connect-wallet" class="stardew-btn" onclick="connectWallet()">CÜZDANI BAĞLA</button>
+      <button id="btn-connect-wallet" class="stardew-btn" onclick="connectWallet()">CONNECT WALLET</button>
     </div>
   </header>
 
@@ -518,15 +518,15 @@ html_content = """<!DOCTYPE html>
       <div class="parchment-banner hero-badge" id="hero-badge">⚡ POWERED BY ARC TESTNET</div>
       <h1 class="hero-title" id="hero-title">BUILD, HARVEST & TRADE IN A <span>DECENTRALIZED PIXEL WORLD</span></h1>
       <p class="hero-subtitle" id="hero-subtitle">
-        Arcadia Homestead, Arc Testnet ağı üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonudur.
+        Arcadia Homestead is a 5x5 Grid Stardew-aesthetic Web3 pixel farming simulation running on Arc Testnet.
       </p>
 
       <div class="hero-cta">
         <button class="stardew-btn" onclick="handlePlayGameClick()" id="btn-hero-play">
-          🎮 OYUNU OYNA / LAUNCH APP
+          🎮 PLAY GAME / LAUNCH APP
         </button>
         <a href="#passes" class="stardew-btn" id="btn-hero-pass">
-          👑 PREMIUM PASS AL
+          👑 GET PREMIUM PASS
         </a>
       </div>
 
@@ -560,13 +560,13 @@ html_content = """<!DOCTYPE html>
       <div class="sticky-pin-container" id="stickyContainer">
         <div class="showcase-header">
           <h2 class="showcase-title" id="showcase-title">HOW TO PLAY & GAMEPLAY FEATURES</h2>
-          <p class="showcase-sub" id="showcase-sub">Aşağı kaydırdıkça Dev Piksel Yaprak ekranı kaplayarak adımları sırayla atlatır</p>
+          <p class="showcase-sub" id="showcase-sub">Scroll down to wipe through showcase steps with Giant Pixel Leaf</p>
         </div>
 
         <div class="showcase-tabs">
-          <button class="tab-btn active" id="tab-1" onclick="triggerBigLeafTransition(1)">🌾 STEP 01: 5x5 TARLA</button>
-          <button class="tab-btn" id="tab-2" onclick="triggerBigLeafTransition(2)">⏱️ STEP 02: BÜYÜME</button>
-          <button class="tab-btn" id="tab-3" onclick="triggerBigLeafTransition(3)">🌱 STEP 03: MAĞAZA</button>
+          <button class="tab-btn active" id="tab-1" onclick="triggerBigLeafTransition(1)">🌾 STEP 01: 5x5 GRID</button>
+          <button class="tab-btn" id="tab-2" onclick="triggerBigLeafTransition(2)">⏱️ STEP 02: GROWTH</button>
+          <button class="tab-btn" id="tab-3" onclick="triggerBigLeafTransition(3)">🌱 STEP 03: SEED SHOP</button>
           <button class="tab-btn" id="tab-4" onclick="triggerBigLeafTransition(4)">💰 STEP 04: USDC MARKET</button>
         </div>
 
@@ -580,25 +580,25 @@ html_content = """<!DOCTYPE html>
           <div class="showcase-right-display">
             <div class="showcase-text-card active" id="card-1">
               <span class="step-badge">STEP 01</span>
-              <h3 class="step-title" id="card1-title">🌾 5x5 GRID TARLA ALTYAPISI</h3>
+              <h3 class="step-title" id="card1-title">🌾 5x5 GRID FARMING INFRASTRUCTURE</h3>
               <p class="step-desc" id="card1-desc">
-                25 kareden oluşan verimli tarım alanınızda toprağı hazırlayın. Kolay ve hızlı arayüzü ile dilediğiniz tohuma dokunarak ekim yapın.
+                Prepare your soil across 25 fertile farm plots. Easily plant seeds by tapping on any crop of your choice.
               </p>
             </div>
 
             <div class="showcase-text-card" id="card-2">
               <span class="step-badge">STEP 02</span>
-              <h3 class="step-title" id="card2-title">⏱️ ZORLU GERÇEK ZAMANLI BÜYÜME</h3>
+              <h3 class="step-title" id="card2-title">⏱️ REALTIME GROWTH & MOISTURE MECHANICS</h3>
               <p class="step-desc" id="card2-desc">
-                Free kullanıcılar için ürünler gerçekçi uzun sürelerde büyür (Wheat: 60s, Carrot: 2.5dk, Pumpkin: 20dk). Ayrıca tarlayı manuel sulamak gerekir!
+                Crops grow in realistic intervals (Wheat: 60s, Carrot: 2.5m, Pumpkin: 20m). Manual watering is required for Free tier farmers!
               </p>
             </div>
 
             <div class="showcase-text-card" id="card-3">
               <span class="step-badge">STEP 03</span>
-              <h3 class="step-title" id="card3-title">🌱 PREMIUM PASS SÜPER HIZ & OTOMATİK SULAMA</h3>
+              <h3 class="step-title" id="card3-title">🌱 PREMIUM PASS 3X SPEED & AUTO IRRIGATION</h3>
               <p class="step-desc" id="card3-desc">
-                Monthly veya Annual Pass aboneleri 3x katına kadar büyüme hızı ve otomatik sprinkler sulama sistemi ile tarlayı kesintisiz işletir!
+                Monthly & Annual Pass subscribers get up to 3x growth acceleration and automated sprinkler systems for 24/7 farming!
               </p>
             </div>
 
@@ -606,7 +606,7 @@ html_content = """<!DOCTYPE html>
               <span class="step-badge">STEP 04</span>
               <h3 class="step-title" id="card4-title">💰 ARC TESTNET REAL USDC CASH-OUT</h3>
               <p class="step-desc" id="card4-desc">
-                Topladığınız ürünleri satın, kazandığınız Coinleri Web3 Cüzdanınıza anında gerçek native ARC USDC token olarak aktarın!
+                Harvest rare crops and cash out your hard-earned USDC directly to your Web3 EVM wallet on Arc Testnet!
               </p>
             </div>
           </div>
@@ -617,7 +617,7 @@ html_content = """<!DOCTYPE html>
     <section id="specs">
       <div class="section-header">
         <h2 class="section-title" id="specs-title">GAMEFI FEATURES & SPECS</h2>
-        <p class="section-sub" id="specs-sub">Stardew Valley 5x5 retro dokusu ve ARC Testnet altyapısı</p>
+        <p class="section-sub" id="specs-sub">Stardew Valley 5x5 retro graphics and Arc Testnet infrastructure</p>
       </div>
 
       <div class="features-grid">
@@ -625,7 +625,7 @@ html_content = """<!DOCTYPE html>
           <div class="feature-icon">🌾</div>
           <h3 class="feature-title">5x5 PIXEL FARMING CYCLES</h3>
           <p class="feature-desc">
-            Toprağı ekip olgunlaştırın. Tohumları (Wheat, Carrot, Tomato, Strawberry, Pumpkin) seçin, büyümesini takip edin ve harvest yapın.
+            Till soil and grow crops. Select seeds (Wheat, Carrot, Tomato, Strawberry, Pumpkin), monitor growth, and harvest rewards.
           </p>
         </div>
 
@@ -633,7 +633,7 @@ html_content = """<!DOCTYPE html>
           <div class="feature-icon">💰</div>
           <h3 class="feature-title">NATIVE USDC ECONOMY</h3>
           <p class="feature-desc">
-            Sıfır gaz sürtünmesi ile native ARC testnet USDC tokenı kullanın. Ürünlerinizi satın ve anında USDC kazanın.
+            Settle earnings in native Arc testnet USDC token with sub-second block finality and zero friction.
           </p>
         </div>
 
@@ -641,7 +641,7 @@ html_content = """<!DOCTYPE html>
           <div class="feature-icon">🤖</div>
           <h3 class="feature-title">AGENTIC MARKET (SOON)</h3>
           <p class="feature-desc">
-            Çiftliğinizi otomatik sulayan, büyüme evrelerini takip eden ve pazar yerinde en iyi fiyattan satış yapan yapay zeka çiftlik botları.
+            Deploy autonomous AI agentic farmers that auto-water plots, manage growth cycles, and trade crops at optimal market prices.
           </p>
         </div>
       </div>
@@ -650,34 +650,34 @@ html_content = """<!DOCTYPE html>
     <section id="passes">
       <div class="section-header">
         <h2 class="section-title" id="passes-title">PREMIUM PASS SUBSCRIPTIONS</h2>
-        <p class="section-sub" id="passes-sub">ARC Testnet native USDC ile ayrıcalıklı çiftçilik avantajları</p>
+        <p class="section-sub" id="passes-sub">Exclusive farming perks paid with Arc Testnet native USDC</p>
       </div>
 
       <div class="pricing-grid">
         <div class="stardew-card pricing-card">
           <div>
             <div class="pricing-name">MONTHLY PASS</div>
-            <div class="pricing-price">5.00 <span>USDC / ay</span></div>
+            <div class="pricing-price">5.00 <span>USDC / mo</span></div>
             <ul class="pricing-list">
-              <li>⚡ 2x Hızlandırılmış Ürün Büyümesi</li>
-              <li>💧 Otomatik Sprinkler Sulama (%0 Kuruma)</li>
-              <li>💰 %10 Düşük Pazar Yeri Komisyonu</li>
-              <li>✨ Altın Çiftçi Amblemi</li>
+              <li>⚡ 2x Accelerated Crop Growth</li>
+              <li>💧 Auto-Sprinkler Irrigation (0% Dry Risk)</li>
+              <li>💰 10% Lower Marketplace Fee</li>
+              <li>✨ Golden Farmer Badge</li>
             </ul>
           </div>
           <button class="stardew-btn" onclick="subscribePass('monthly', 5)">SUBSCRIBE (5 USDC)</button>
         </div>
 
         <div class="stardew-card pricing-card">
-          <div class="pricing-badge">EN POPÜLER</div>
+          <div class="pricing-badge">MOST POPULAR</div>
           <div>
             <div class="pricing-name">ANNUAL PASS</div>
-            <div class="pricing-price">45.00 <span>USDC / yıl</span></div>
+            <div class="pricing-price">45.00 <span>USDC / yr</span></div>
             <ul class="pricing-list">
-              <li>🚀 3x Süper Büyüme Hızı</li>
-              <li>🌧️ Otomatik Yağmur & Otomatik Sulama</li>
-              <li>💎 %0 Sıfır Komisyon + %50 Bonus Gelir</li>
-              <li>🏆 Altın Çapa & VIP Rozet</li>
+              <li>🚀 3x Super Growth Speed</li>
+              <li>🌧️ Auto-Rain & Full Automated Irrigation</li>
+              <li>💎 0% Zero Fee + 50% Bonus Yield</li>
+              <li>🏆 Golden Hoe & VIP Badge</li>
             </ul>
           </div>
           <button class="stardew-btn" onclick="subscribePass('annual', 45)">SUBSCRIBE (45 USDC)</button>
@@ -697,9 +697,9 @@ html_content = """<!DOCTYPE html>
       <div class="loading-bar-outer">
         <div class="loading-bar-inner" id="loadingBar"></div>
       </div>
-      <div class="loading-percent" id="loadingPercent">%0</div>
+      <div class="loading-percent" id="loadingPercent">0%</div>
       <div class="loading-tip" id="loadingTip">
-        "İpucu: Arc Testnet ağında native USDC ile pazar alışverişi yapabilirsiniz."
+        "Tip: You can use native USDC on Arc Testnet for all marketplace transactions."
       </div>
     </div>
   </div>
@@ -710,7 +710,7 @@ html_content = """<!DOCTYPE html>
 
     <div class="game-top-bar">
       <button class="stardew-btn" onclick="switchToLandingView()">
-        ⬅ WEB SİTESİNE DÖN
+        ⬅ BACK TO WEBSITE
       </button>
       <div class="game-title">🌾 ARCADIA HOMESTEAD - FULL GAME</div>
       <div class="game-usdc-badge" id="game-view-usdc">USDC: 0.00</div>
@@ -719,7 +719,7 @@ html_content = """<!DOCTYPE html>
     <div class="full-game-container">
       <div class="top-stats-bar">
         <div class="stat-coins">🪙 <span id="coinCount">163</span> Coins</div>
-        <div class="stat-pass-badge" id="passStatusBadge">FREE PASS (Zor Mod: 1x Hız + %30 Kesinti)</div>
+        <div class="stat-pass-badge" id="passStatusBadge">FREE PASS (Hard Mode: 1x Speed + 30% Fee)</div>
         <div class="stat-day">Day <span id="dayCount">1</span></div>
       </div>
 
@@ -743,7 +743,7 @@ html_content = """<!DOCTYPE html>
       <div class="seed-shop-card">
         <div class="shop-header">
           <span>🌱 SEED SHOP</span>
-          <span style="font-size: 9px; color: var(--text-muted);">SPEED: <b id="speedMultLabel" style="color: #f87171;">1x (Zor Mod)</b></span>
+          <span style="font-size: 9px; color: var(--text-muted);">SPEED: <b id="speedMultLabel" style="color: #f87171;">1x (Hard Mode)</b></span>
         </div>
         <div class="seed-grid" id="seedGrid"></div>
         <div class="shop-instruction">⚠️ HARD USDC EARNING: Harvest 🎃 Pumpkin (20m) or 🍓 Strawberry (10m) to earn +0.10 USDC into Vault! Upgrade to Premium Pass for 3x Speed!</div>
@@ -1418,7 +1418,7 @@ html_content = """<!DOCTYPE html>
       if (tile.crop && tile.needsWater) {
         tile.needsWater = false;
         playSound('water');
-        showPixelToast("Tarlaya su verildi! Büyüme devam ediyor 💧", "💧");
+        showPixelToast("Watered plot! Growth continues 💧", "💧");
         updateTileDOM(tileId);
         return;
       }
@@ -1450,7 +1450,7 @@ html_content = """<!DOCTYPE html>
       if (!tile.crop) {
         const seedDef = SEEDS.find(s => s.id === selectedSeedId);
         if (coins < seedDef.price) {
-          showPixelToast(`Yetersiz Coin! ${seedDef.name} ekmek için 🪙${seedDef.price} Coin gerekiyor.`, "❌");
+          showPixelToast(`Insufficient Coins! Need 🪙${seedDef.price} Coins for ${seedDef.name}.`, "❌");
           return;
         }
 
@@ -1500,16 +1500,16 @@ html_content = """<!DOCTYPE html>
           updateTileDOM(i);
         }
       });
-      showPixelToast(`🌅 Güneş doğdu! Gün ${day} başladı. Tüm ürünler olgunlaştı!`, "🌅");
+      showPixelToast(`🌅 Day ${day} started! All crops matured!`, "🌅");
     }
 
-    /* REAL WEB3 ARC TESTNET TRANSACTION CASH OUT ENGINE */
+    /* REAL WEB3 ARC TESTNET TRANSACTIONS */
     async function cashoutUSDC() {
-      if (usdcVault <= 0) return showPixelToast("Bakiyenizde çekilebilir USDC bulunmuyor. (Nadir ürünler yetiştirin!)", "❌");
+      if (usdcVault <= 0) return showPixelToast("No withdrawable USDC in Vault. Harvest rare crops!", "❌");
       if (!userAddress) return openWalletModal();
 
       try {
-        showPixelToast("Arc Testnet üzerinde gerçek USDC çekim işlemi başlatılıyor...", "⌛");
+        showPixelToast("Initiating real USDC cash-out on Arc Testnet...", "⌛");
         const signer = await provider.getSigner();
 
         const tx = await signer.sendTransaction({
@@ -1517,19 +1517,19 @@ html_content = """<!DOCTYPE html>
           value: ethers.parseEther("0.0001")
         });
 
-        showPixelToast(`💸 İşlem gönderildi! Tx: ${tx.hash.substring(0,10)}...`, "🔗");
+        showPixelToast(`💸 Transaction sent! Tx: ${tx.hash.substring(0,10)}...`, "🔗");
         usdcVault = 0.00;
         triggerCelebration();
         updateTileDOM(0);
       } catch(err) {
-        showPixelToast("İşlem kullanıcı tarafından iptal edildi veya başarısız oldu.", "⚠️");
+        showPixelToast("Transaction cancelled or failed.", "⚠️");
       }
     }
 
     const farmingTips = [
-      "İpucu: Arc Testnet ağında native USDC ile pazar alışverişi yapabilirsiniz.",
-      "İpucu: Tohumlarınızı düzenli sulayarak 2 kat daha hızlı ürün elde edin.",
-      "İpucu: Annual Pass aboneliği ile pazarda %0 komisyon avantajından yararlanın."
+      "Tip: Use native USDC on Arc Testnet for all marketplace transactions.",
+      "Tip: Water plots regularly to boost crop growth speed by 2x.",
+      "Tip: Annual Pass subscribers enjoy 0% marketplace fee."
     ];
 
     function startLoadingSequence() {
@@ -1579,14 +1579,13 @@ html_content = """<!DOCTYPE html>
 
     async function connectWallet() {
       if (!window.ethereum) {
-        showPixelToast("Web3 cüzdanı (MetaMask / Rabby) bulunamadı!", "⚠️");
+        showPixelToast("Web3 wallet (MetaMask / Rabby) not found!", "⚠️");
         return false;
       }
       try {
         provider = new ethers.BrowserProvider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
 
-        // Switch or Add Arc Testnet Network (Chain ID 5042002 / 0x4cef52)
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
@@ -1611,10 +1610,10 @@ html_content = """<!DOCTYPE html>
         userAddress = await signer.getAddress();
         const shortAddr = `${userAddress.substring(0,6)}...${userAddress.substring(userAddress.length-4)}`;
         document.getElementById('btn-connect-wallet').innerHTML = `🟢 ${shortAddr}`;
-        showPixelToast(`Arc Testnet Cüzdan Bağlandı: ${shortAddr}`, "🟢");
+        showPixelToast(`Connected to Arc Testnet: ${shortAddr}`, "🟢");
         return true;
       } catch (err) {
-        showPixelToast("Cüzdan bağlantısı veya ağ değişimi reddedildi.", "⚠️");
+        showPixelToast("Wallet connection or network switch rejected.", "⚠️");
         return false;
       }
     }
@@ -1626,7 +1625,7 @@ html_content = """<!DOCTYPE html>
       }
 
       try {
-        showPixelToast(`${amountUSDC} USDC ${type.toUpperCase()} Pass işlemi onaylanıyor...`, "⌛");
+        showPixelToast(`Confirming ${amountUSDC} USDC ${type.toUpperCase()} Pass...`, "⌛");
         const signer = await provider.getSigner();
 
         const tx = await signer.sendTransaction({
@@ -1642,7 +1641,7 @@ html_content = """<!DOCTYPE html>
           document.getElementById('passStatusBadge').style.background = 'rgba(59, 130, 246, 0.2)';
           document.getElementById('passStatusBadge').style.color = '#60a5fa';
           document.getElementById('passStatusBadge').style.borderColor = '#3b82f6';
-          document.getElementById('passStatusBadge').innerText = 'MONTHLY PASS (2x Hız + Otomatik Sulama)';
+          document.getElementById('passStatusBadge').innerText = 'MONTHLY PASS (2x Speed + Auto Water)';
         } else if (type === 'annual') {
           speedMultiplier = 3;
           marketplaceFeePct = 0;
@@ -1650,15 +1649,15 @@ html_content = """<!DOCTYPE html>
           document.getElementById('passStatusBadge').style.background = 'rgba(52, 211, 153, 0.2)';
           document.getElementById('passStatusBadge').style.color = '#34d399';
           document.getElementById('passStatusBadge').style.borderColor = '#34d399';
-          document.getElementById('passStatusBadge').innerText = 'ANNUAL PASS (3x Hız + %0 Komisyon)';
+          document.getElementById('passStatusBadge').innerText = 'ANNUAL PASS (3x Speed + 0% Fee)';
         }
 
-        showPixelToast(`🎉 ${amountUSDC} USDC ${type.toUpperCase()} PASS AKTİF EDİLDİ! Tx: ${tx.hash.substring(0,10)}...`, "👑");
+        showPixelToast(`🎉 ${amountUSDC} USDC ${type.toUpperCase()} PASS ACTIVATED! Tx: ${tx.hash.substring(0,10)}...`, "👑");
         triggerCelebration();
         renderSeedShop();
         for(let i=0; i<25; i++) updateTileDOM(i);
       } catch(err) {
-        showPixelToast("Abonelik işlemi iptal edildi. Pass tanımlanmadı.", "⚠️");
+        showPixelToast("Subscription cancelled. Pass not activated.", "⚠️");
       }
     }
 
@@ -1678,7 +1677,7 @@ html_content = """<!DOCTYPE html>
         navShowcase: "Game Intro", navSpecs: "GameFi Specs", navPasses: "Passes & Pricing", navPlay: "Play Game",
         heroBadge: "⚡ POWERED BY ARC TESTNET",
         heroTitle: "BUILD, HARVEST & TRADE IN A <span>DECENTRALIZED PIXEL WORLD</span>",
-        heroSubtitle: "Arcadia Homestead is a 5x5 Grid Stardew-aesthetic Web3 pixel farming simulation running on the Arc Testnet.",
+        heroSubtitle: "Arcadia Homestead is a 5x5 Grid Stardew-aesthetic Web3 pixel farming simulation running on Arc Testnet.",
         heroPlay: "🎮 PLAY GAME / LAUNCH APP", heroPass: "👑 GET PREMIUM PASS",
         showcaseTitle: "HOW TO PLAY & GAMEPLAY FEATURES", showcaseSub: "Scroll down to wipe through showcase steps with Giant Pixel Leaf",
         specsTitle: "GAMEFI FEATURES & SPECS", specsSub: "Stardew Valley 5x5 retro graphics and Arc Testnet infrastructure",
@@ -1717,7 +1716,7 @@ html_content = """<!DOCTYPE html>
     };
 
     function changeLanguage(langKey) {
-      const dict = I18N_DICT[langKey] || I18N_DICT['TR'];
+      const dict = I18N_DICT[langKey] || I18N_DICT['EN'];
       document.getElementById('nav-showcase').innerText = dict.navShowcase;
       document.getElementById('nav-specs').innerText = dict.navSpecs;
       document.getElementById('nav-passes').innerText = dict.navPasses;
@@ -1760,4 +1759,4 @@ html_content = """<!DOCTYPE html>
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("ARC TESTNET FULL NETWORK SWITCHER INTEGRATED SUCCESSFULLY!")
+print("DEFAULT LANGUAGE SET TO ENGLISH SUCCESSFULLY!")
