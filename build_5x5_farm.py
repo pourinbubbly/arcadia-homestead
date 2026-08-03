@@ -3,9 +3,9 @@ html_content = """<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arcadia Homestead - Web3 Pixel Farming on ARC Testnet</title>
+  <title>Arcadia Homestead - Web3 Pixel Farming on Arc Testnet</title>
 
-  <meta name="description" content="Arcadia Homestead - ARC Testnet üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonu.">
+  <meta name="description" content="Arcadia Homestead - Arc Testnet üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonu.">
 
   <!-- Google Fonts: Stardew Retro Pixel Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,7 +71,7 @@ html_content = """<!DOCTYPE html>
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* Web3 Connect Wallet Pixel Art Modal Overlay */
+    /* Web3 Connect Wallet Pixel Modal Overlay */
     #walletModal {
       display: none; position: fixed; inset: 0; z-index: 800;
       background: rgba(14, 8, 4, 0.92); backdrop-filter: blur(12px);
@@ -463,7 +463,7 @@ html_content = """<!DOCTYPE html>
       <div style="font-size: 48px;">🚜</div>
       <div class="wallet-modal-title">ARCADIA HOMESTEAD</div>
       <div class="wallet-modal-desc">
-        Oyuna giriş yapmak ve ARC Testnet üzerinde native USDC kazanmak için lütfen Web3 cüzdanınızı bağlayın.
+        Oyuna giriş yapmak ve Arc Testnet üzerinde native USDC kazanmak için lütfen Web3 cüzdanınızı bağlayın.
       </div>
       <button class="stardew-btn" onclick="connectWalletFromModal()">🟢 CÜZDANI BAĞLA / CONNECT WALLET</button>
       <button style="background:transparent; border:none; color:var(--text-muted); font-family:var(--font-pixel); font-size:10px; cursor:pointer;" onclick="closeWalletModal()">KAPAT / CANCEL</button>
@@ -518,7 +518,7 @@ html_content = """<!DOCTYPE html>
       <div class="parchment-banner hero-badge" id="hero-badge">⚡ POWERED BY ARC TESTNET</div>
       <h1 class="hero-title" id="hero-title">BUILD, HARVEST & TRADE IN A <span>DECENTRALIZED PIXEL WORLD</span></h1>
       <p class="hero-subtitle" id="hero-subtitle">
-        Arcadia Homestead, ARC Testnet ağı üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonudur.
+        Arcadia Homestead, Arc Testnet ağı üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonudur.
       </p>
 
       <div class="hero-cta">
@@ -686,7 +686,7 @@ html_content = """<!DOCTYPE html>
     </section>
 
     <footer>
-      <p>© 2026 Arcadia Homestead - ARC Testnet (Chain ID 5042002 / 0x4cef52)</p>
+      <p>© 2026 Arcadia Homestead - Arc Testnet (Chain ID 5042002 / 0x4cef52)</p>
     </footer>
   </div>
 
@@ -699,7 +699,7 @@ html_content = """<!DOCTYPE html>
       </div>
       <div class="loading-percent" id="loadingPercent">%0</div>
       <div class="loading-tip" id="loadingTip">
-        "İpucu: ARC Testnet ağında native USDC ile pazar alışverişi yapabilirsiniz."
+        "İpucu: Arc Testnet ağında native USDC ile pazar alışverişi yapabilirsiniz."
       </div>
     </div>
   </div>
@@ -753,7 +753,7 @@ html_content = """<!DOCTYPE html>
 
   <script>
     const TREASURY_ADDRESS = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F";
-    const ARC_CHAIN_ID = "0x4cef52"; // 5042002 in hex
+    const ARC_CHAIN_HEX = "0x4cef52"; // 5042002 in hex
 
     /* RETRO PIXEL TOAST SYSTEM */
     function showPixelToast(msg, icon = '📜') {
@@ -958,18 +958,15 @@ html_content = """<!DOCTYPE html>
 
         const floatY = Math.sin(tick) * 8;
 
-        // Glow background
         const gradient = hCtx.createRadialGradient(360, 220 + floatY, 40, 360, 220 + floatY, 320);
         gradient.addColorStop(0, 'rgba(253, 224, 71, 0.2)');
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         hCtx.fillStyle = gradient;
         hCtx.fillRect(0, 0, 720, 440);
 
-        // Center of floating island
         const centerX = 360, centerY = 210 + floatY;
-        const tileW = 60, tileH = 30; // Isometric tile dimensions
+        const tileW = 60, tileH = 30;
 
-        // 1. Dirt Base Layer (Underneath Grass)
         hCtx.fillStyle = '#2c1609';
         hCtx.beginPath();
         hCtx.moveTo(centerX, centerY - 110);
@@ -979,7 +976,6 @@ html_content = """<!DOCTYPE html>
         hCtx.closePath();
         hCtx.fill();
 
-        // 2. Dirt 3D Side Walls
         hCtx.fillStyle = '#1c0a02';
         hCtx.beginPath();
         hCtx.moveTo(centerX - 270, centerY + 20);
@@ -998,7 +994,6 @@ html_content = """<!DOCTYPE html>
         hCtx.closePath();
         hCtx.fill();
 
-        // 3. Grass Top Layer (Balanced Padding Around Grid)
         hCtx.fillStyle = '#599632';
         hCtx.beginPath();
         hCtx.moveTo(centerX, centerY - 115);
@@ -1008,15 +1003,12 @@ html_content = """<!DOCTYPE html>
         hCtx.closePath();
         hCtx.fill();
 
-        // 4. PERFECT 5x5 ISOMETRIC GRID (Centering Math: Grid origin offset by c=2, r=2)
         const crops = ['🌾', '🥕', '🍅', '🍓', '🎃'];
         for (let r = 0; r < 5; r++) {
           for (let c = 0; c < 5; c++) {
-            // Isometric math centered precisely at (centerX, centerY + 12)
             const isoX = centerX + (c - r) * (tileW / 2);
             const isoY = centerY + 12 + (c + r - 4) * (tileH / 2);
 
-            // Draw isometric dirt plot
             hCtx.fillStyle = '#3b2313';
             hCtx.beginPath();
             hCtx.moveTo(isoX, isoY - tileH / 2);
@@ -1028,7 +1020,6 @@ html_content = """<!DOCTYPE html>
 
             hCtx.strokeStyle = '#1a0f07'; hCtx.lineWidth = 2; hCtx.stroke();
 
-            // Render crop icon cleanly in center of isometric tile
             const idx = r * 5 + c;
             if (idx % 2 === 0 || idx === 7 || idx === 17) {
               const cropIcon = crops[idx % crops.length];
@@ -1038,7 +1029,6 @@ html_content = """<!DOCTYPE html>
           }
         }
 
-        // Floating Gold USDC Token
         const coinY = centerY - 135 + Math.sin(tick * 1.5) * 10;
         hCtx.font = '36px "Press Start 2P"';
         hCtx.fillText('🪙', centerX - 18, coinY);
@@ -1268,9 +1258,9 @@ html_content = """<!DOCTYPE html>
       animate();
     }
 
-    /* GAME ENGINE & REAL WEB3 USDC TRANSACTIONS */
+    /* GAME ENGINE & REAL WEB3 ARC TESTNET TRANSACTIONS */
     let coins = 163;
-    let usdcVault = 0.00; // Starts at 0.00 USDC!
+    let usdcVault = 0.00;
     let day = 1;
     let selectedSeedId = 'wheat';
     let passLevel = 'free';
@@ -1438,7 +1428,6 @@ html_content = """<!DOCTYPE html>
         const netYieldCoins = Math.round(seedDef.yieldCoins * (1 - marketplaceFeePct / 100));
         coins += netYieldCoins;
 
-        // RARE HIGH-TIER CROPS YIELD +0.10 USDC HARD EARNED!
         if (seedDef.id === 'strawberry' || seedDef.id === 'pumpkin') {
           usdcVault += 0.10 * (1 - marketplaceFeePct / 100);
         }
@@ -1520,13 +1509,12 @@ html_content = """<!DOCTYPE html>
       if (!userAddress) return openWalletModal();
 
       try {
-        showPixelToast("ARC Testnet üzerinde gerçek USDC çekim işlemi başlatılıyor...", "⌛");
+        showPixelToast("Arc Testnet üzerinde gerçek USDC çekim işlemi başlatılıyor...", "⌛");
         const signer = await provider.getSigner();
 
-        // Send REAL Web3 Transaction on ARC Testnet!
         const tx = await signer.sendTransaction({
           to: TREASURY_ADDRESS,
-          value: ethers.parseEther("0.0001") // 0.0001 Native gas token on ARC Testnet
+          value: ethers.parseEther("0.0001")
         });
 
         showPixelToast(`💸 İşlem gönderildi! Tx: ${tx.hash.substring(0,10)}...`, "🔗");
@@ -1539,7 +1527,7 @@ html_content = """<!DOCTYPE html>
     }
 
     const farmingTips = [
-      "İpucu: ARC Testnet ağında native USDC ile pazar alışverişi yapabilirsiniz.",
+      "İpucu: Arc Testnet ağında native USDC ile pazar alışverişi yapabilirsiniz.",
       "İpucu: Tohumlarınızı düzenli sulayarak 2 kat daha hızlı ürün elde edin.",
       "İpucu: Annual Pass aboneliği ile pazarda %0 komisyon avantajından yararlanın."
     ];
@@ -1591,20 +1579,42 @@ html_content = """<!DOCTYPE html>
 
     async function connectWallet() {
       if (!window.ethereum) {
-        showPixelToast("Web3 cüzdanı (Metamask/Rabby) bulunamadı!", "⚠️");
+        showPixelToast("Web3 cüzdanı (MetaMask / Rabby) bulunamadı!", "⚠️");
         return false;
       }
       try {
         provider = new ethers.BrowserProvider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
+
+        // Switch or Add Arc Testnet Network (Chain ID 5042002 / 0x4cef52)
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: ARC_CHAIN_HEX }]
+          });
+        } catch (switchError) {
+          if (switchError.code === 4902 || (switchError.message && switchError.message.includes('Unrecognized chain'))) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: ARC_CHAIN_HEX,
+                chainName: 'Arc Testnet',
+                nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
+                rpcUrls: ['https://arc-testnet.drpc.org'],
+                blockExplorerUrls: ['https://testnet.arcscan.app']
+              }]
+            });
+          }
+        }
+
         const signer = await provider.getSigner();
         userAddress = await signer.getAddress();
         const shortAddr = `${userAddress.substring(0,6)}...${userAddress.substring(userAddress.length-4)}`;
         document.getElementById('btn-connect-wallet').innerHTML = `🟢 ${shortAddr}`;
-        showPixelToast(`Cüzdan bağlandı: ${shortAddr}`, "🟢");
+        showPixelToast(`Arc Testnet Cüzdan Bağlandı: ${shortAddr}`, "🟢");
         return true;
       } catch (err) {
-        showPixelToast("Cüzdan bağlantısı reddedildi.", "⚠️");
+        showPixelToast("Cüzdan bağlantısı veya ağ değişimi reddedildi.", "⚠️");
         return false;
       }
     }
@@ -1612,14 +1622,13 @@ html_content = """<!DOCTYPE html>
     async function subscribePass(type, amountUSDC) {
       if (!userAddress) {
         const connected = await connectWallet();
-        if (!connected) return; // CANCELLED -> DO NOT SUBSCRIBE!
+        if (!connected) return;
       }
 
       try {
         showPixelToast(`${amountUSDC} USDC ${type.toUpperCase()} Pass işlemi onaylanıyor...`, "⌛");
         const signer = await provider.getSigner();
 
-        // REAL WEB3 TRANSACTION ON ARC TESTNET!
         const tx = await signer.sendTransaction({
           to: TREASURY_ADDRESS,
           value: ethers.parseEther("0.0002")
@@ -1649,7 +1658,6 @@ html_content = """<!DOCTYPE html>
         renderSeedShop();
         for(let i=0; i<25; i++) updateTileDOM(i);
       } catch(err) {
-        // STRICT USER CANCEL HANDLING!
         showPixelToast("Abonelik işlemi iptal edildi. Pass tanımlanmadı.", "⚠️");
       }
     }
@@ -1660,51 +1668,51 @@ html_content = """<!DOCTYPE html>
         navShowcase: "Oyun Tanıtımı", navSpecs: "GameFi Specs", navPasses: "Passes & Pricing", navPlay: "Oyunu Oyna",
         heroBadge: "⚡ POWERED BY ARC TESTNET",
         heroTitle: "DECENTRALIZED PIXEL DÜNYASINDA <span>EK, TOPLA & TİCARET YAP</span>",
-        heroSubtitle: "Arcadia Homestead, ARC Testnet ağı üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonudur.",
+        heroSubtitle: "Arcadia Homestead, Arc Testnet ağı üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonudur.",
         heroPlay: "🎮 OYUNU OYNA / LAUNCH APP", heroPass: "👑 PREMIUM PASS AL",
         showcaseTitle: "NASIL OYNANIR & OYUN MEKANİKLERİ", showcaseSub: "Aşağı kaydırdıkça Dev Piksel Yaprak adımları sırayla atlatır",
-        specsTitle: "GAMEFI FEATURES & SPECS", specsSub: "Stardew Valley 5x5 retro dokusu ve ARC Testnet altyapısı",
-        passesTitle: "PREMIUM PASS SUBSCRIPTIONS", passesSub: "ARC Testnet native USDC ile ayrıcalıklı çiftçilik avantajları"
+        specsTitle: "GAMEFI FEATURES & SPECS", specsSub: "Stardew Valley 5x5 retro dokusu ve Arc Testnet altyapısı",
+        passesTitle: "PREMIUM PASS SUBSCRIPTIONS", passesSub: "Arc Testnet native USDC ile ayrıcalıklı çiftçilik avantajları"
       },
       EN: {
         navShowcase: "Game Intro", navSpecs: "GameFi Specs", navPasses: "Passes & Pricing", navPlay: "Play Game",
         heroBadge: "⚡ POWERED BY ARC TESTNET",
         heroTitle: "BUILD, HARVEST & TRADE IN A <span>DECENTRALIZED PIXEL WORLD</span>",
-        heroSubtitle: "Arcadia Homestead is a 5x5 Grid Stardew-aesthetic Web3 pixel farming simulation running on the ARC Testnet.",
+        heroSubtitle: "Arcadia Homestead is a 5x5 Grid Stardew-aesthetic Web3 pixel farming simulation running on the Arc Testnet.",
         heroPlay: "🎮 PLAY GAME / LAUNCH APP", heroPass: "👑 GET PREMIUM PASS",
         showcaseTitle: "HOW TO PLAY & GAMEPLAY FEATURES", showcaseSub: "Scroll down to wipe through showcase steps with Giant Pixel Leaf",
-        specsTitle: "GAMEFI FEATURES & SPECS", specsSub: "Stardew Valley 5x5 retro graphics and ARC Testnet infrastructure",
-        passesTitle: "PREMIUM PASS SUBSCRIPTIONS", passesSub: "Exclusive farming perks paid with ARC Testnet native USDC"
+        specsTitle: "GAMEFI FEATURES & SPECS", specsSub: "Stardew Valley 5x5 retro graphics and Arc Testnet infrastructure",
+        passesTitle: "PREMIUM PASS SUBSCRIPTIONS", passesSub: "Exclusive farming perks paid with Arc Testnet native USDC"
       },
       ES: {
         navShowcase: "Introducción", navSpecs: "GameFi Specs", navPasses: "Pases y Precios", navPlay: "Jugar Ahora",
         heroBadge: "⚡ DESARROLLADO EN ARC TESTNET",
         heroTitle: "SIEMBRA, COSECHA Y COMERCIA EN UN <span>MUNDO PIXEL DECENTRALIZADO</span>",
-        heroSubtitle: "Arcadia Homestead es una simulación de granja pixel Web3 de 5x5 con estética Stardew ejecutada en ARC Testnet.",
+        heroSubtitle: "Arcadia Homestead es una simulación de granja pixel Web3 de 5x5 con estética Stardew ejecutada en Arc Testnet.",
         heroPlay: "🎮 JUGAR / ABRIR APP", heroPass: "👑 OBTENER PASSE PREMIUM",
         showcaseTitle: "CÓMO JUGAR Y CARACTERÍSTICAS", showcaseSub: "Desplázate hacia abajo para pasar las páginas con la Hoja Píxel Gigante",
-        specsTitle: "ESPECIFICACIONES GAMEFI", specsSub: "Gráficos retro 5x5 Stardew Valley e infraestructura ARC Testnet",
-        passesTitle: "SUSCRIPCIONES PREMIUM PASS", passesSub: "Beneficios exclusivos de cultivo pagados con USDC nativo en ARC Testnet"
+        specsTitle: "ESPECIFICACIONES GAMEFI", specsSub: "Gráficos retro 5x5 Stardew Valley e infraestructura Arc Testnet",
+        passesTitle: "SUSCRIPCIONES PREMIUM PASS", passesSub: "Beneficios exclusivos de cultivo pagados con USDC nativo en Arc Testnet"
       },
       ZH: {
         navShowcase: "游戏介绍", navSpecs: "GameFi 规格", navPasses: "通行证与价格", navPlay: "开始游戏",
         heroBadge: "⚡ 由 ARC TESTNET 提供支持",
         heroTitle: "在去中心化像素世界中 <span>种植、收割与交易</span>",
-        heroSubtitle: "Arcadia Homestead 是一款在 ARC Testnet 上运行的 5x5 网格 Stardew 美学 Web3 像素农场模拟游戏。",
+        heroSubtitle: "Arcadia Homestead 是一款在 Arc Testnet 上运行的 5x5 网格 Stardew 美学 Web3 像素农场模拟游戏。",
         heroPlay: "🎮 开始游戏 / 启动应用", heroPass: "👑 获取高级通行证",
         showcaseTitle: "玩法介绍与游戏特色", showcaseSub: "向下滚动，巨型像素树叶将带您逐页浏览演示",
-        specsTitle: "GAMEFI 特性与规格", specsSub: "Stardew Valley 5x5 复古像素图形和 ARC Testnet 基础设施",
-        passesTitle: "高级通行证订阅", passesSub: "使用 ARC Testnet 原生 USDC 支付的专属农场特权"
+        specsTitle: "GAMEFI 特性与规格", specsSub: "Stardew Valley 5x5 复古像素图形和 Arc Testnet 基础设施",
+        passesTitle: "高级通行证订阅", passesSub: "使用 Arc Testnet 原生 USDC 支付的专属农场特权"
       },
       JA: {
         navShowcase: "ゲーム紹介", navSpecs: "GameFi スペック", navPasses: "パス＆料金", navPlay: "ゲームをプレイ",
         heroBadge: "⚡ POWERED BY ARC TESTNET",
         heroTitle: "分散型ピクセル世界で <span>育てる・収穫する・取引する</span>",
-        heroSubtitle: "Arcadia Homesteadは、ARC Testnet上で動作する5x5グリッドStardew風Web3ピクセル農場シミュレーションです。",
+        heroSubtitle: "Arcadia Homesteadは、Arc Testnet上で動作する5x5グリッドStardew風Web3ピクセル農場シミュレーションです。",
         heroPlay: "🎮 ゲームをプレイ / App起動", heroPass: "👑 プレミアムパスを取得",
         showcaseTitle: "遊び方＆ゲーム機能", showcaseSub: "下にスクロールすると、巨大ピクセルリーフがページを切り替えます",
-        specsTitle: "GAMEFI 機能＆スペック", specsSub: "Stardew Valley 5x5レトログラフィックスとARC Testnetインフラ",
-        passesTitle: "プレミアムパスサブスクリプション", passesSub: "ARC TestnetネイティブUSDCで支払う特別農場特典"
+        specsTitle: "GAMEFI 機能＆スペック", specsSub: "Stardew Valley 5x5レトログラフィックスとArc Testnetインフラ",
+        passesTitle: "プレミアムパスサブスクリプション", passesSub: "Arc TestnetネイティブUSDCで支払う特別農場特典"
       }
     };
 
@@ -1752,4 +1760,4 @@ html_content = """<!DOCTYPE html>
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("ARCADIA HOMESTEAD BRANDING & ISOMETRIC GRID ALIGNMENT FIXED SUCCESSFULLY!")
+print("ARC TESTNET FULL NETWORK SWITCHER INTEGRATED SUCCESSFULLY!")
