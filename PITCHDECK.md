@@ -88,6 +88,3 @@ timeline
 
 ---
 
-## 🌐 Project Links & Resources
-- **GitHub Repository**: [github.com/pourinbubbly/arcadia-homestead](https://github.com/pourinbubbly/arcadia-homestead)
-- **Live Local Demo**: `http://localhost:8080`
