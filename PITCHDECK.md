@@ -1,30 +1,41 @@
-# 🌾 Arcadia Homestead - English Pitch Deck (DeFi & Agentic Economy Track)
+# 🌾 Arcadia Homestead - Web3 GameFi Pitch Deck
 
-> **"A Stardew-Style Web3 5x5 Grid Pixel Farming Ecosystem Powered by Autonomous AI Agents and Native USDC Micro-DeFi Loops on Circle Arc Testnet"**
+> **Track:** DeFi & Agentic Economy  
+> **Blockchain:** Circle Arc Testnet (`Chain ID: 5042002` / `0x4cef52`)  
+> **GitHub Repository:** [github.com/pourinbubbly/arcadia-homestead](https://github.com/pourinbubbly/arcadia-homestead)
+
+![Arcadia Homestead Hero Island Stage](assets/hero_island_stage.png)
 
 ---
 
 ## 🚀 Executive Summary
-Arcadia Homestead merges **Stardew Valley nostalgic 16x16 pixel art** with **Autonomous AI Agent Workforces** and **Native USDC Micro-DeFi Loops** on Circle's Arc Testnet (`Chain ID: 5042002`). Players and DeFi liquidity providers deploy AI Agentic Farmers that continuously manage crop cycles, optimize soil yield, auto-harvest high-tier crops (Golden Pumpkins 🎃 & Diamond Strawberries 🍓), and execute friction-free USDC cash-outs directly to EVM wallets.
+
+**Arcadia Homestead** is an autonomous 5x5 Grid Pixel Farming Simulation and Micro-DeFi Ecosystem built on **Circle Arc Testnet**. It bridges nostalgic 16x16 Stardew Valley aesthetic with **24/7 Autonomous AI Agentic Farmers** that manage crop rotation, soil moisture, auto-harvesting, and instant native **USDC** cash-outs.
+
+> [!TIP]
+> **Why Arc Network?** Arc's sub-second block time (0.4s) and zero-gas fee model enable high-frequency micro-yield settlements that are impossible on congested L1/L2 networks.
 
 ---
 
 ## 🎯 1. The Problem
-1. **Capital Inefficiency in GameFi**: Traditional Web3 games rely on inflationary, useless governance tokens with no real yield backing or DeFi utility.
-2. **High Friction & Active Grind**: Most Web3 farming games require tedious manual clicks every few minutes, pricing out passive DeFi liquidity providers and casual gamers.
-3. **Lack of Autonomous Agentic Infrastructure**: Current AI agents in crypto are restricted to simple chat or trading bots rather than visual, stateful economic participants in decentralized gaming worlds.
+
+1. **Capital Inefficiency in Web3 Gaming**: Most GameFi projects issue hyper-inflationary, utility-free governance tokens that crash within weeks.
+2. **Tedious Active Grind**: Traditional Web3 farming games force players to click every 2 minutes, alienating passive DeFi liquidity providers.
+3. **Lack of Visual Autonomous Agents**: Existing AI agents are limited to text chatbots rather than active visual economic entities operating inside decentralized game loops.
 
 ---
 
 ## 💡 2. The Solution: Arcadia Homestead
-Arcadia Homestead establishes a **DeFi-driven Agentic GameFi Ecosystem**:
-- **🤖 Autonomous AI Farmer Agents**: AI Agents operate 24/7 on behalf of users—monitoring moisture levels, auto-watering dry tiles, harvesting optimal crop rotations, and routing profits to USDC Vaults.
-- **💰 Native USDC DeFi Yield Engine**: Zero-gas sub-second transactions on Arc Testnet allow micro-yield harvesting without friction. Cash-out native USDC directly to any Web3 wallet (MetaMask / Rabby).
-- **👑 Sustainable Monetization & Sink Mechanics**: Monthly ($5 USDC) and Annual ($45 USDC) Premium Passes unlock 3x Agentic Growth Acceleration, 0% Marketplace Fees, and Automated Rain Sprinklers.
+
+![Arcadia Homestead Interface](assets/hero_island_stage.png)
+
+- **🤖 Autonomous AI Farmer Workforces**: AI Agents operate 24/7—monitoring soil moisture, watering dry tiles, harvesting optimal crop rotations, and routing profits to USDC Vaults.
+- **💰 Native USDC Settlement Engine**: Direct Ethers.js v6 integration on Arc Testnet (`0x4cef52`). Earn native USDC from rare harvests (Golden Pumpkins 🎃 & Diamond Strawberries 🍓) and cash out instantly.
+- **👑 Sustainable Monetization & Sink Mechanics**: Monthly ($5 USDC) and Annual ($45 USDC) Premium Passes unlock 3x growth speed, 0% marketplace fees, and automated rain sprinklers.
 
 ---
 
-## 🤖 3. DeFi & Agentic Economy Architecture
+## 🤖 3. DeFi & Agentic Architecture
 
 ```
                                ┌────────────────────────────────┐
@@ -49,14 +60,7 @@ Arcadia Homestead establishes a **DeFi-driven Agentic GameFi Ecosystem**:
 
 ---
 
-## 📊 4. Market Opportunity (TAM / SAM / SOM)
-- **Total Addressable Market (TAM)**: $30B+ Global GameFi + $10B+ Autonomous AI Agent Ecosystem.
-- **Serviceable Addressable Market (SAM)**: Cozy Game Enthusiasts (Stardew Valley 30M+ copies, Animal Crossing 45M+ copies) looking for passive Web3 yield.
-- **Serviceable Obtainable Market (SOM)**: 100K+ Active Arc Network Testnet & Mainnet DeFi / AI Agent Users.
-
----
-
-## 🪙 5. Tokenomics & Dual-Economy Model
+## 🪙 4. Tokenomics & Dual-Economy Model
 
 | Asset | Type | Utility / Sink Mechanism |
 | :--- | :--- | :--- |
@@ -66,25 +70,24 @@ Arcadia Homestead establishes a **DeFi-driven Agentic GameFi Ecosystem**:
 
 ---
 
-## 🗺️ 6. Product Roadmap
+## 🗺️ 5. Product Roadmap
 
-### Phase 1: Testnet & Pixel Engine (Current Checkpoint ✅)
-- ✅ 5x5 Grid Stardew Pixel Art Engine & Floating Isometric Hero Island.
-- ✅ Ethers.js v6 integration on Circle Arc Testnet (Chain ID `5042002`).
-- ✅ 5-Language Localization (TR, EN, ES, ZH, JA) & Giant Pixel Leaf Wipe Engine.
-- ✅ GitHub Repository: [github.com/pourinbubbly/arcadia-homestead](https://github.com/pourinbubbly/arcadia-homestead)
-
-### Phase 2: Agentic Economy & AI Bot SDK (Q4 2026 🤖)
-- 🤖 Open-source Autonomous Agentic Farmer SDK (Eliza OS & Python Agent support).
-- 💧 Automated Rain & Irrigation smart contracts.
-- 📊 On-chain yield strategy leaderboard.
-
-### Phase 3: Mainnet Launch & Guild Liquidity Vaults (Q1 2027 🚀)
-- 🚀 Arc Mainnet Deployment with Circle CCTP cross-chain liquidity bridging.
-- 📱 Mobile PWA (iOS & Android) with background agentic notifications.
+```mermaid
+timeline
+    title Arcadia Homestead Roadmap
+    Phase 1 : 5x5 Pixel Engine & Arc Testnet Integration
+            : 5-Language Localization (TR, EN, ES, ZH, JA)
+            : GitHub Open Source Launch
+    Phase 2 : Open-Source AI Agentic Farmer SDK
+            : Automated Irrigation Smart Contracts
+            : On-Chain Strategy Leaderboard
+    Phase 3 : Arc Mainnet Deployment
+            : Circle CCTP Cross-Chain Liquidity Bridging
+            : Mobile PWA Launch (iOS & Android)
+```
 
 ---
 
-## 👥 7. Team & Contact
-- **GitHub**: [github.com/pourinbubbly/arcadia-homestead](https://github.com/pourinbubbly/arcadia-homestead)
-- **Live Demo**: `http://localhost:8080` (Local Dev Environment)
+## 🌐 Project Links & Resources
+- **GitHub Repository**: [github.com/pourinbubbly/arcadia-homestead](https://github.com/pourinbubbly/arcadia-homestead)
+- **Live Local Demo**: `http://localhost:8080`
