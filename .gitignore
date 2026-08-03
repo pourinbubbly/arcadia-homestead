@@ -1,4 +1,22 @@
-screenshot*.png
-*.log
+# Python & OS
 __pycache__/
-.tempmediaStorage/
+*.log
+.DS_Store
+
+# Temporary screenshots & testing scripts
+screenshot*.png
+inspect_*.py
+copy_*.py
+check_*.py
+process_*.py
+take_*.py
+test_*.py
+update_landing.py
+build_game_tileset.py
+
+# Legacy dumps
+sprout_lands_repo/
+*.png
+!assets/*.png
+*.jpg
+!assets/*.jpg
