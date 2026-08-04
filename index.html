@@ -42,7 +42,7 @@
       box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none;
     }
 
-    button, a, select, input, .grid-tile, .seed-item, .stardew-btn, .cashout-btn, .tab-btn {
+    button, a, select, input, .stardew-btn, .cashout-btn, .tab-btn {
       cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path fill='%23000000' d='M0,0 L0,24 L7,17 L13,30 L18,28 L12,15 L21,15 Z'/><path fill='%2334d399' d='M2,3 L2,20 L7,15 L13,27 L15,26 L10,14 L18,14 Z'/><path fill='%23ffffff' d='M3,4 L3,16 L6,13 L9,20 L10,19 L7,12 L14,12 Z'/></svg>") 0 0, pointer !important;
     }
 
@@ -151,10 +151,17 @@
 
     #landing-view { position: relative; z-index: 1; width: 100%; }
 
-    /* HERO SECTION */
+    /* ENHANCED HERO SECTION WITH GOLDEN SUNRAYS & GLOW */
     #hero {
       min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-      padding: 130px 20px 80px 20px; background: radial-gradient(circle at center, rgba(88, 28, 135, 0.85) 0%, rgba(20, 11, 7, 0.96) 80%);
+      padding: 130px 20px 80px 20px;
+      background: radial-gradient(circle at 50% 30%, rgba(126, 34, 206, 0.45) 0%, rgba(88, 28, 135, 0.85) 45%, rgba(20, 11, 7, 0.98) 85%);
+      position: relative; overflow: hidden;
+    }
+
+    .hero-glow-rays {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse at 50% 40%, rgba(253, 224, 71, 0.15) 0%, transparent 60%);
     }
 
     .parchment-banner {
@@ -334,10 +341,10 @@
     .loading-percent { font-family: var(--font-pixel); font-size: 12px; color: var(--stardew-gold); }
     .loading-tip { font-family: var(--font-sans); font-size: 16px; color: var(--text-muted); font-style: italic; min-height: 46px; }
 
-    /* FULL 5x5 GRID GAME VIEW */
+    /* SINGLE SCREEN ZERO-SCROLL 5x5 GRID GAME VIEW */
     #game-view {
       display: none; position: fixed; inset: 0; z-index: 400; width: 100vw; height: 100vh;
-      overflow-y: auto; overflow-x: hidden; padding: 80px 20px 60px 20px;
+      overflow: hidden; padding: 75px 24px 20px 24px;
     }
 
     #gameBackgroundCanvas {
@@ -346,16 +353,21 @@
 
     .game-top-bar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 450;
-      display: flex; align-items: center; justify-content: space-between; padding: 12px 28px;
+      display: flex; align-items: center; justify-content: space-between; padding: 10px 28px;
       background: rgba(30, 17, 9, 0.94); backdrop-filter: blur(8px); border-bottom: 4px solid var(--wood-light);
     }
     .game-title { font-family: var(--font-stardew); font-size: 18px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; }
     .game-usdc-badge { font-family: var(--font-pixel); font-size: 12px; color: var(--stardew-gold); background: rgba(245, 158, 11, 0.2); border: 2px solid var(--stardew-gold); padding: 8px 16px; border-radius: 4px; box-shadow: 0 4px 0 #000; }
 
-    /* 5x5 Grid Game Container in Full View */
-    .full-game-container {
+    /* 2-COLUMN PERFECT FIT GAME LAYOUT */
+    .full-game-layout {
       position: relative; z-index: 10;
-      width: 100%; max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: center;
+      width: 100%; max-width: 1100px; height: calc(100vh - 95px); margin: 0 auto;
+      display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 20px; align-items: center;
+    }
+
+    .game-left-col {
+      display: flex; flex-direction: column; gap: 10px; height: 100%; justify-content: center;
     }
 
     .top-stats-bar {
@@ -367,24 +379,9 @@
     .stat-pass-badge { color: #f87171; background: rgba(239, 68, 68, 0.2); padding: 4px 8px; border: 1px solid #ef4444; border-radius: 3px; font-size: 8px; line-height: 1.3; text-align: center; max-width: 320px; }
     .stat-day { color: #fff; text-shadow: 2px 2px 0 #000; white-space: nowrap; }
 
-    .usdc-vault-card {
-      width: 100%; background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
-      border: 4px solid #34d399; box-shadow: 0 0 16px rgba(52, 211, 153, 0.4);
-      border-radius: 6px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
-    }
-    .usdc-vault-info { display: flex; flex-direction: column; gap: 4px; }
-    .usdc-vault-title { font-family: var(--font-pixel); font-size: 10px; color: #60a5fa; }
-    .usdc-vault-balance { font-family: var(--font-retro); font-size: 32px; color: #34d399; text-shadow: 1px 1px 0 #000; }
-    .cashout-btn {
-      font-family: var(--font-pixel); font-size: 10px; padding: 10px 16px;
-      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
-      color: #000; border: 2px solid #000; box-shadow: 0 3px 0 #000; border-radius: 4px; cursor: pointer; font-weight: bold;
-    }
-    .cashout-btn:hover { background: linear-gradient(180deg, #6ee7b7 0%, #34d399 100%); transform: translateY(-2px); }
-
     .farm-grid-frame {
       width: 100%; background: #2c1609; border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -8px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.8); border-radius: 6px; padding: 16px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.8); border-radius: 6px; padding: 14px;
     }
 
     .farm-grid {
@@ -394,7 +391,7 @@
     .grid-tile {
       background: #4a5d23; border: 3px solid #2b3910; border-radius: 4px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; position: relative; overflow: hidden;
+      position: relative; overflow: hidden;
       width: 100%; height: 100%; box-sizing: border-box;
     }
 
@@ -417,7 +414,7 @@
     }
 
     .tile-crop-icon {
-      font-size: 34px; line-height: 1; display: flex; align-items: center; justify-content: center;
+      font-size: 32px; line-height: 1; display: flex; align-items: center; justify-content: center;
       pointer-events: none;
     }
 
@@ -430,25 +427,45 @@
     .action-strip {
       width: 100%; display: flex; align-items: center; justify-content: space-between;
       background: #2c1609; border: 4px solid var(--wood-border); outline: 2px solid var(--wood-light); outline-offset: -5px;
-      padding: 10px 18px; border-radius: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      padding: 10px 16px; border-radius: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
     }
 
-    .ready-count-badge { font-family: var(--font-pixel); font-size: 10px; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .ready-count-badge { font-family: var(--font-pixel); font-size: 9px; color: #fff; display: flex; align-items: center; gap: 8px; }
 
     .end-day-btn {
-      font-family: var(--font-pixel); font-size: 10px; padding: 10px 16px;
+      font-family: var(--font-pixel); font-size: 9px; padding: 10px 14px;
       background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
       color: #fff; border: 2px solid #000; box-shadow: 0 3px 0 #000; border-radius: 4px; cursor: pointer; text-shadow: 1px 1px 0 #000;
     }
     .end-day-btn:hover { background: linear-gradient(180deg, #fb923c 0%, #f97316 100%); transform: translateY(-2px); }
 
-    .seed-shop-card {
-      width: 100%; background: #2c1609; border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.7); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 14px;
+    /* RIGHT COLUMN: VAULT + SEED SHOP */
+    .game-right-col {
+      display: flex; flex-direction: column; gap: 14px; height: 100%; justify-content: center;
     }
 
-    .shop-header { font-family: var(--font-stardew); font-size: 16px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; display: flex; align-items: center; justify-content: space-between; }
-    .seed-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .usdc-vault-card {
+      width: 100%; background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+      border: 4px solid #34d399; box-shadow: 0 0 16px rgba(52, 211, 153, 0.4);
+      border-radius: 6px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .usdc-vault-info { display: flex; flex-direction: column; gap: 4px; }
+    .usdc-vault-title { font-family: var(--font-pixel); font-size: 10px; color: #60a5fa; }
+    .usdc-vault-balance { font-family: var(--font-retro); font-size: 32px; color: #34d399; text-shadow: 1px 1px 0 #000; }
+    .cashout-btn {
+      font-family: var(--font-pixel); font-size: 9px; padding: 10px 14px;
+      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+      color: #000; border: 2px solid #000; box-shadow: 0 3px 0 #000; border-radius: 4px; cursor: pointer; font-weight: bold;
+    }
+    .cashout-btn:hover { background: linear-gradient(180deg, #6ee7b7 0%, #34d399 100%); transform: translateY(-2px); }
+
+    .seed-shop-card {
+      width: 100%; background: #2c1609; border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .shop-header { font-family: var(--font-stardew); font-size: 15px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; display: flex; align-items: center; justify-content: space-between; }
+    .seed-grid { display: flex; flex-direction: column; gap: 8px; }
 
     .seed-item {
       background: #1a0f0a; border: 3px solid #542d13; border-radius: 4px; padding: 10px 14px;
@@ -465,7 +482,7 @@
     .seed-price { font-family: var(--font-pixel); font-size: 9px; color: var(--stardew-gold); }
     .seed-time { font-family: var(--font-pixel); font-size: 8px; color: var(--text-muted); }
 
-    .shop-instruction { font-family: var(--font-pixel); font-size: 8px; color: #f87171; text-align: center; margin-top: 4px; }
+    .shop-instruction { font-family: var(--font-pixel); font-size: 8px; color: #f87171; text-align: center; margin-top: 4px; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -528,6 +545,7 @@
   <!-- MAIN LANDING PAGE VIEW -->
   <div id="landing-view">
     <section id="hero">
+      <div class="hero-glow-rays"></div>
       <div class="parchment-banner hero-badge" id="hero-badge">⚡ POWERED BY ARC TESTNET</div>
       <h1 class="hero-title" id="hero-title">BUILD, HARVEST & TRADE IN A <span>DECENTRALIZED PIXEL WORLD</span></h1>
       <p class="hero-subtitle" id="hero-subtitle">
@@ -717,49 +735,55 @@
     </div>
   </div>
 
-  <!-- FULL 5x5 GRID GAME VIEW -->
+  <!-- SINGLE SCREEN ZERO-SCROLL 5x5 GRID GAME VIEW -->
   <div id="game-view">
     <canvas id="gameBackgroundCanvas"></canvas>
 
     <div class="game-top-bar">
-      <button class="stardew-btn" onclick="switchToLandingView()">
+      <button class="stardew-btn" style="padding: 10px 18px; font-size: 10px;" onclick="switchToLandingView()">
         ⬅ BACK TO WEBSITE
       </button>
       <div class="game-title">🌾 ARCADIA HOMESTEAD - FULL GAME</div>
       <div class="game-usdc-badge" id="game-view-usdc">USDC: 0.00</div>
     </div>
 
-    <div class="full-game-container">
-      <div class="top-stats-bar">
-        <div class="stat-coins">🪙 <span id="coinCount">163</span> Coins</div>
-        <div class="stat-pass-badge" id="passStatusBadge">FREE PASS (Hard Mode: 1x Speed + 30% Fee)</div>
-        <div class="stat-day">Day <span id="dayCount">1</span></div>
-      </div>
-
-      <div class="usdc-vault-card">
-        <div class="usdc-vault-info">
-          <span class="usdc-vault-title">💰 ARC USDC VAULT</span>
-          <span class="usdc-vault-balance" id="usdcVaultBalance">0.00 USDC</span>
+    <div class="full-game-layout">
+      <!-- LEFT COLUMN: STATS + 5x5 GRID + ACTION BAR -->
+      <div class="game-left-col">
+        <div class="top-stats-bar">
+          <div class="stat-coins">🪙 <span id="coinCount">163</span> Coins</div>
+          <div class="stat-pass-badge" id="passStatusBadge">FREE PASS (Hard Mode: 1x Speed + 30% Fee)</div>
+          <div class="stat-day">Day <span id="dayCount">1</span></div>
         </div>
-        <button class="cashout-btn" onclick="cashoutUSDC()">CASH OUT USDC 💸</button>
-      </div>
 
-      <div class="farm-grid-frame">
-        <div class="farm-grid" id="farmGrid"></div>
-      </div>
-
-      <div class="action-strip">
-        <div class="ready-count-badge">🌾 <span id="readyCount">0</span> ready! (Blue = Needs Water 💧)</div>
-        <button class="end-day-btn" onclick="endDay()">🌅 END DAY (Skip Time)</button>
-      </div>
-
-      <div class="seed-shop-card">
-        <div class="shop-header">
-          <span>🌱 SEED SHOP</span>
-          <span style="font-size: 9px; color: var(--text-muted);">SPEED: <b id="speedMultLabel" style="color: #f87171;">1x (Hard Mode)</b></span>
+        <div class="farm-grid-frame">
+          <div class="farm-grid" id="farmGrid"></div>
         </div>
-        <div class="seed-grid" id="seedGrid"></div>
-        <div class="shop-instruction">⚠️ HARD USDC EARNING: Harvest 🎃 Pumpkin (20m) or 🍓 Strawberry (10m) to earn +0.10 USDC into Vault! Upgrade to Premium Pass for 3x Speed!</div>
+
+        <div class="action-strip">
+          <div class="ready-count-badge">🌾 <span id="readyCount">0</span> ready! (Blue = Needs Water 💧)</div>
+          <button class="end-day-btn" onclick="endDay()">🌅 END DAY (Skip Time)</button>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: USDC VAULT + SEED SHOP PANEL -->
+      <div class="game-right-col">
+        <div class="usdc-vault-card">
+          <div class="usdc-vault-info">
+            <span class="usdc-vault-title">💰 ARC USDC VAULT</span>
+            <span class="usdc-vault-balance" id="usdcVaultBalance">0.00 USDC</span>
+          </div>
+          <button class="cashout-btn" onclick="cashoutUSDC()">CASH OUT USDC 💸</button>
+        </div>
+
+        <div class="seed-shop-card">
+          <div class="shop-header">
+            <span>🌱 SEED SHOP</span>
+            <span style="font-size: 9px; color: var(--text-muted);">SPEED: <b id="speedMultLabel" style="color: #f87171;">1x (Hard Mode)</b></span>
+          </div>
+          <div class="seed-grid" id="seedGrid"></div>
+          <div class="shop-instruction">⚠️ Harvest 🎃 Pumpkin (20m) or 🍓 Strawberry (10m) for +0.10 USDC Vault yield!</div>
+        </div>
       </div>
     </div>
   </div>
@@ -958,7 +982,7 @@
       renderGameWorld();
     }
 
-    /* PERFECTLY ALIGNED & BALANCED FLOATING ISOMETRIC HERO STAGE WITH DYNAMIC HARVEST FLOATING ORBIT */
+    /* ENHANCED HERO STAGE ENGINE (Easily reversible/toggable) */
     function initHeroShowcase() {
       const hCanvas = document.getElementById('heroCanvas'); if (!hCanvas) return;
       const hCtx = hCanvas.getContext('2d'); hCtx.imageSmoothingEnabled = false;
@@ -973,7 +997,7 @@
         const floatY = Math.sin(tick) * 8;
 
         const gradient = hCtx.createRadialGradient(360, 220 + floatY, 40, 360, 220 + floatY, 340);
-        gradient.addColorStop(0, 'rgba(253, 224, 71, 0.22)');
+        gradient.addColorStop(0, 'rgba(253, 224, 71, 0.28)');
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         hCtx.fillStyle = gradient;
         hCtx.fillRect(0, 0, 720, 440);
@@ -1335,6 +1359,27 @@
       } catch(e) {}
     }
 
+    /* DYNAMIC GAME VIEW CURSOR CONTROLLER (SELECTED CROP CURSOR) */
+    function updateGameCursor() {
+      const selectedSeed = SEEDS.find(s => s.id === selectedSeedId) || SEEDS[0];
+      const cropIcon = selectedSeed.icon;
+      
+      const svgCursor = `<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'>
+        <rect x='2' y='2' width='32' height='32' rx='6' fill='%232c1609' stroke='%23fde047' stroke-width='2'/>
+        <text x='18' y='25' font-size='22' text-anchor='middle'>${cropIcon}</text>
+      </svg>`;
+      
+      const cursorUrl = `url("data:image/svg+xml;utf8,${encodeURIComponent(svgCursor)}") 18 18, pointer`;
+      
+      const gameView = document.getElementById('game-view');
+      if (gameView) {
+        gameView.style.cursor = cursorUrl;
+      }
+      
+      const tiles = document.querySelectorAll('.grid-tile');
+      tiles.forEach(t => t.style.cursor = cursorUrl);
+    }
+
     function updatePassUI() {
       const badge = document.getElementById('passStatusBadge');
       const speedLabel = document.getElementById('speedMultLabel');
@@ -1405,6 +1450,7 @@
 
       renderSeedShop();
       for(let i=0; i<25; i++) updateTileDOM(i);
+      updateGameCursor();
     }
 
     function initStaticDOMFarmGrid() {
@@ -1437,6 +1483,7 @@
 
         gridEl.appendChild(tileDiv);
       }
+      updateGameCursor();
     }
 
     function updateTileDOM(id) {
@@ -1510,6 +1557,7 @@
     function selectSeed(seedId) {
       selectedSeedId = seedId;
       renderSeedShop();
+      updateGameCursor();
     }
 
     function handleTileClick(tileId, e) {
