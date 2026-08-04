@@ -301,7 +301,7 @@
       pointer-events: none; z-index: 50; image-rendering: pixelated;
     }
 
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 1; margin-left: 50px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 1; margin-left: 180px; }
 
     .feature-card {
       padding: 40px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
@@ -1298,17 +1298,14 @@
       const wrapper = document.querySelector('.specs-wrapper');
       if (!canvas || !wrapper) return;
 
-      canvas.width = wrapper.clientWidth + 280;
-      canvas.height = 500;
+      canvas.width = wrapper.clientWidth;
+      canvas.height = 460;
       const ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = false;
 
-      // Position Bugs Bunny so his right elbow rests directly on Card 1's left wooden border!
-      const card1 = document.getElementById('card-spec-1');
-      const card1Left = card1 ? card1.offsetLeft : 100;
-      
-      const targetBugsX = card1Left - 130;
-      let bugsX = -260;
+      // Bugs Bunny sits at x = 0px to x = 220px, with his right elbow touching Card 1 at x = 180px!
+      const targetBugsX = 10;
+      let bugsX = -240;
       let tick = 0;
 
       function renderBugsBunnyLoop() {
@@ -1316,30 +1313,29 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (bugsX < targetBugsX) {
-          bugsX += 8;
+          bugsX += 10;
           if (bugsX > targetBugsX) bugsX = targetBugsX;
         }
 
         // Bugs Bunny Leaning stance & Carrot Munching Math
         const munchBob = Math.floor(Math.sin(tick * 0.12) * 5);
-        const earWiggle = Math.sin(tick * 0.08) * 0.03;
+        const earWiggle = Math.sin(tick * 0.08) * 0.02;
 
         ctx.save();
-        ctx.translate(Math.floor(bugsX), 40 + munchBob);
-
-        // Apply slight ear wiggle rotation
+        ctx.translate(Math.floor(bugsX), 20 + munchBob);
         ctx.rotate(earWiggle);
 
         // Draw exact 1:1 pixel art Bugs Bunny from user's uploaded image!
-        ctx.drawImage(bugsImg, 0, 0, 240, 360);
+        // Scale to 210px width by 330px height
+        ctx.drawImage(bugsImg, 0, 0, 210, 330);
 
         // Draw Animated Pixel Carrot Munching Particles!
-        if (tick % 8 < 4) {
+        if (tick % 6 < 3) {
           ctx.fillStyle = '#f97316';
-          ctx.fillRect(195, 120 + munchBob, 6, 6);
-          ctx.fillRect(205, 140 + munchBob, 5, 5);
+          ctx.fillRect(170, 110 + munchBob, 6, 6);
+          ctx.fillRect(180, 130 + munchBob, 5, 5);
           ctx.fillStyle = '#fde047';
-          ctx.fillRect(188, 130 + munchBob, 5, 5);
+          ctx.fillRect(165, 120 + munchBob, 5, 5);
         }
 
         ctx.restore();
