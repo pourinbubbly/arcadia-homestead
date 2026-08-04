@@ -288,18 +288,33 @@ html_content = """<!DOCTYPE html>
     .step-title { font-family: var(--font-stardew); font-size: 22px; color: #fff; margin-bottom: 14px; text-shadow: 2px 2px 0 #000; }
     .step-desc { font-size: 16px; color: #e2d1c3; line-height: 1.65; }
 
-    /* SPECS & PRICING */
-    #specs { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
+    /* SPECS SECTION & RABBIT PUSH ANIMATION STYLES */
+    #specs { padding: 100px 40px; max-width: 1200px; margin: 0 auto; position: relative; overflow: visible; }
     .section-header { text-align: center; margin-bottom: 64px; }
     .section-title { font-family: var(--font-stardew); font-size: 32px; color: var(--stardew-gold); margin-bottom: 14px; text-shadow: 3px 3px 0 #000; }
     .section-sub { color: var(--text-muted); font-size: 18px; }
 
+    .specs-wrapper { position: relative; width: 100%; }
+
+    #rabbitCanvas {
+      position: absolute; top: -60px; left: 0; width: 100%; height: 120px;
+      pointer-events: none; z-index: 50; image-rendering: pixelated;
+    }
+
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 36px; }
+
     .feature-card {
       padding: 40px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
       border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -7px;
       border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+      opacity: 0; transform: translateX(-120px) scale(0.85);
     }
+
+    .feature-card.pushed-in {
+      opacity: 1; transform: translateX(0) scale(1);
+    }
+
     .feature-icon { font-size: 52px; margin-bottom: 22px; }
     .feature-title { font-family: var(--font-stardew); font-size: 18px; color: var(--stardew-gold); margin-bottom: 14px; }
     .feature-desc { color: #e2d1c3; font-size: 16px; line-height: 1.6; }
@@ -651,29 +666,34 @@ html_content = """<!DOCTYPE html>
         <p class="section-sub" id="specs-sub">Stardew Valley 5x5 retro graphics and Arc Testnet infrastructure</p>
       </div>
 
-      <div class="features-grid">
-        <div class="stardew-card feature-card">
-          <div class="feature-icon">🌾</div>
-          <h3 class="feature-title">5x5 PIXEL FARMING CYCLES</h3>
-          <p class="feature-desc">
-            Till soil and grow crops. Select seeds (Wheat, Carrot, Tomato, Strawberry, Pumpkin), monitor growth, and harvest rewards.
-          </p>
-        </div>
+      <div class="specs-wrapper">
+        <!-- RABBIT PUSHING CARDS ANIMATION CANVAS -->
+        <canvas id="rabbitCanvas"></canvas>
 
-        <div class="stardew-card feature-card">
-          <div class="feature-icon">💰</div>
-          <h3 class="feature-title">NATIVE USDC ECONOMY</h3>
-          <p class="feature-desc">
-            Settle earnings in native Arc testnet USDC token with sub-second block finality and zero friction.
-          </p>
-        </div>
+        <div class="features-grid" id="featuresGrid">
+          <div class="stardew-card feature-card" id="card-spec-1">
+            <div class="feature-icon">🌾</div>
+            <h3 class="feature-title">5x5 PIXEL FARMING CYCLES</h3>
+            <p class="feature-desc">
+              Till soil and grow crops. Select seeds (Wheat, Carrot, Tomato, Strawberry, Pumpkin), monitor growth, and harvest rewards.
+            </p>
+          </div>
 
-        <div class="stardew-card feature-card">
-          <div class="feature-icon">🤖</div>
-          <h3 class="feature-title">AGENTIC MARKET (SOON)</h3>
-          <p class="feature-desc">
-            Deploy autonomous AI agentic farmers that auto-water plots, manage growth cycles, and trade crops at optimal market prices.
-          </p>
+          <div class="stardew-card feature-card" id="card-spec-2">
+            <div class="feature-icon">💰</div>
+            <h3 class="feature-title">NATIVE USDC ECONOMY</h3>
+            <p class="feature-desc">
+              Settle earnings in native Arc testnet USDC token with sub-second block finality and zero friction.
+            </p>
+          </div>
+
+          <div class="stardew-card feature-card" id="card-spec-3">
+            <div class="feature-icon">🤖</div>
+            <h3 class="feature-title">AGENTIC MARKET (SOON)</h3>
+            <p class="feature-desc">
+              Deploy autonomous AI agentic farmers that auto-water plots, manage growth cycles, and trade crops at optimal market prices.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -982,7 +1002,7 @@ html_content = """<!DOCTYPE html>
       renderGameWorld();
     }
 
-    /* ENHANCED HERO STAGE ENGINE (Easily reversible/toggable) */
+    /* ENHANCED HERO STAGE ENGINE */
     function initHeroShowcase() {
       const hCanvas = document.getElementById('heroCanvas'); if (!hCanvas) return;
       const hCtx = hCanvas.getContext('2d'); hCtx.imageSmoothingEnabled = false;
@@ -1266,6 +1286,97 @@ html_content = """<!DOCTYPE html>
           switchShowcaseTab(1);
         }
       }
+    }
+
+    /* RABBIT HOPPING & CARDS PUSHING ANIMATION ENGINE FOR SPECS SECTION */
+    let rabbitAnimTriggered = false;
+
+    function triggerRabbitSpecsAnimation() {
+      if (rabbitAnimTriggered) return;
+      rabbitAnimTriggered = true;
+
+      const canvas = document.getElementById('rabbitCanvas');
+      const wrapper = document.querySelector('.specs-wrapper');
+      if (!canvas || !wrapper) return;
+
+      canvas.width = wrapper.clientWidth;
+      canvas.height = 120;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+
+      const cards = [
+        document.getElementById('card-spec-1'),
+        document.getElementById('card-spec-2'),
+        document.getElementById('card-spec-3')
+      ];
+
+      let rabbitX = -80;
+      const speed = 14;
+      const cardXPositions = [canvas.width * 0.16, canvas.width * 0.50, canvas.width * 0.83];
+      const cardPushed = [false, false, false];
+      let tick = 0;
+
+      function animateRabbitRun() {
+        tick++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        rabbitX += speed;
+
+        // Rabbit hopping animation math
+        const hopY = Math.abs(Math.sin(tick * 0.3)) * 22;
+        const currentY = 70 - hopY;
+
+        // Render Pixel Rabbit 🐇 + Carrot 🥕 in mouth
+        ctx.save();
+        ctx.translate(Math.floor(rabbitX), Math.floor(currentY));
+        ctx.font = '40px sans-serif';
+        ctx.fillText('🐇', 0, 0);
+        ctx.font = '24px sans-serif';
+        ctx.fillText('🥕', 22, -10 + Math.sin(tick*0.5)*3);
+        ctx.restore();
+
+        // Render floating carrot crumbs
+        ctx.fillStyle = '#f97316';
+        for(let c=0; c<4; c++) {
+          const crumbX = rabbitX - 15 - (c * 12);
+          const crumbY = 70 + Math.sin(tick + c) * 10;
+          if (crumbX > 0) ctx.fillRect(Math.floor(crumbX), Math.floor(crumbY), 5, 5);
+        }
+
+        // Check if rabbit passes card positions and pushes them into place!
+        for(let i=0; i<3; i++) {
+          if (rabbitX >= cardXPositions[i] && !cardPushed[i]) {
+            cardPushed[i] = true;
+            if (cards[i]) {
+              cards[i].classList.add('pushed-in');
+              playSound('harvest');
+            }
+          }
+        }
+
+        if (rabbitX < canvas.width + 120) {
+          requestAnimationFrame(animateRabbitRun);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      animateRabbitRun();
+    }
+
+    function initSpecsObserver() {
+      const specsSection = document.getElementById('specs');
+      if (!specsSection) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            triggerRabbitSpecsAnimation();
+          }
+        });
+      }, { threshold: 0.15 });
+
+      observer.observe(specsSection);
     }
 
     /* CROP PARTICLE EXPLOSION ENGINE & CELEBRATION */
@@ -1938,6 +2049,7 @@ html_content = """<!DOCTYPE html>
       for(let i=0; i<25; i++) updateTileDOM(i);
       window.addEventListener('scroll', handleStickyScroll);
       handleStickyScroll();
+      initSpecsObserver();
     });
   </script>
 </body>
@@ -1947,4 +2059,4 @@ html_content = """<!DOCTYPE html>
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("DYNAMIC SELECTED CROP CURSOR & SINGLE SCREEN ZERO-SCROLL GAME LAYOUT UPDATED SUCCESSFULLY!")
+print("CARROT EATING PIXEL RABBIT PUSHING CARDS ANIMATION IMPLEMENTED SUCCESSFULLY!")
