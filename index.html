@@ -288,7 +288,7 @@
     .step-title { font-family: var(--font-stardew); font-size: 22px; color: #fff; margin-bottom: 14px; text-shadow: 2px 2px 0 #000; }
     .step-desc { font-size: 16px; color: #e2d1c3; line-height: 1.65; }
 
-    /* BUGS BUNNY BLOCK PUSHING SPECS STYLES */
+    /* HAND-DRAWN 16-BIT STARDEW BUGS BUNNY SPECS STYLES */
     #specs { padding: 100px 40px; max-width: 1200px; margin: 0 auto; position: relative; overflow: visible; }
     .section-header { text-align: center; margin-bottom: 64px; }
     .section-title { font-family: var(--font-stardew); font-size: 32px; color: var(--stardew-gold); margin-bottom: 14px; text-shadow: 3px 3px 0 #000; }
@@ -297,12 +297,11 @@
     .specs-wrapper { position: relative; width: 100%; min-height: 380px; }
 
     #rabbitCanvas {
-      position: absolute; top: -60px; left: 0; width: 100%; height: 440px;
+      position: absolute; top: -40px; left: -100px; width: calc(100% + 140px); height: 460px;
       pointer-events: none; z-index: 50; image-rendering: pixelated;
     }
 
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 0; transition: opacity 0.3s ease; }
-    .features-grid.visible { opacity: 1; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 1; margin-left: 50px; }
 
     .feature-card {
       padding: 40px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
@@ -1284,7 +1283,85 @@
       }
     }
 
-    /* BUGS BUNNY BLOCK PUSHING & LEANING CARROT EATING ANIMATION ENGINE */
+    /* 16-BIT STARDEW BUGS BUNNY HAND-DRAWN CANVAS PIXEL SPRITE RENDERER */
+    function draw16BitBugsBunny(ctx, x, y, pose, scale = 4.5) {
+      // 16x24 Pixel Art Matrix Definition for BUGS BUNNY
+      // G=Gray(#9ca3af), W=White(#ffffff), P=Pink(#f472b6), B=Blue(#3b82f6), O=Orange(#f97316), K=Black(#1a0f0a)
+      ctx.save();
+      ctx.translate(Math.floor(x), Math.floor(y));
+      
+      const s = scale;
+      
+      // Draw Ears
+      ctx.fillStyle = '#1a0f0a';
+      ctx.fillRect(-2*s, -26*s, 4*s, 12*s); ctx.fillRect(6*s, -28*s, 4*s, 14*s);
+      ctx.fillStyle = '#9ca3af';
+      ctx.fillRect(-1*s, -25*s, 2*s, 10*s); ctx.fillRect(7*s, -27*s, 2*s, 12*s);
+      ctx.fillStyle = '#f472b6';
+      ctx.fillRect(0*s, -23*s, 1*s, 6*s); ctx.fillRect(8*s, -25*s, 1*s, 8*s);
+
+      // Draw Head & Face
+      ctx.fillStyle = '#9ca3af'; ctx.fillRect(-4*s, -14*s, 14*s, 10*s);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(-2*s, -10*s, 10*s, 6*s); // Muzzle
+      ctx.fillStyle = '#1a0f0a'; ctx.fillRect(2*s, -13*s, 2*s, 3*s); ctx.fillRect(6*s, -13*s, 2*s, 3*s); // Eyes
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(3*s, -13*s, 1*s, 1*s); ctx.fillRect(7*s, -13*s, 1*s, 1*s); // Highlights
+      ctx.fillStyle = '#f472b6'; ctx.fillRect(3*s, -9*s, 3*s, 2*s); // Nose
+
+      if (pose === 'walk') {
+        // Body with Farmer Blue Overalls
+        ctx.fillStyle = '#3b82f6'; ctx.fillRect(-4*s, -4*s, 12*s, 10*s);
+        ctx.fillStyle = '#fde047'; ctx.fillRect(-1*s, -3*s, 2*s, 2*s); ctx.fillRect(5*s, -3*s, 2*s, 2*s); // Gold Buttons
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(-3*s, -2*s, 10*s, 5*s); // White Chest
+
+        // Walking Legs
+        const legSwing = Math.floor(Math.sin(Date.now() * 0.01) * 4);
+        ctx.fillStyle = '#9ca3af';
+        ctx.fillRect(-3*s + legSwing*s, 6*s, 3*s, 7*s);
+        ctx.fillRect(4*s - legSwing*s, 6*s, 3*s, 7*s);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-5*s + legSwing*s, 11*s, 6*s, 3*s);
+        ctx.fillRect(3*s - legSwing*s, 11*s, 6*s, 3*s);
+
+        // Walking Arms holding carrot
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(8*s, -2*s, 4*s, 4*s);
+        // Carrot
+        ctx.fillStyle = '#f97316'; ctx.fillRect(11*s, -4*s, 5*s, 3*s);
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(16*s, -5*s, 3*s, 4*s);
+
+      } else if (pose === 'lean_munch') {
+        // Bugs Bunny Leaning against LEFT side of Card 1!
+        ctx.fillStyle = '#3b82f6'; ctx.fillRect(-4*s, -4*s, 12*s, 10*s);
+        ctx.fillStyle = '#fde047'; ctx.fillRect(-1*s, -3*s, 2*s, 2*s); ctx.fillRect(5*s, -3*s, 2*s, 2*s);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(-3*s, -2*s, 10*s, 5*s);
+
+        // Crossed Leaning Legs
+        ctx.fillStyle = '#9ca3af';
+        ctx.fillRect(-1*s, 6*s, 3*s, 8*s); ctx.fillRect(2*s, 6*s, 3*s, 8*s);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-3*s, 12*s, 6*s, 3*s); ctx.fillRect(1*s, 12*s, 6*s, 3*s);
+
+        // Left Arm Leaning Elbow against Card Frame on Right!
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(8*s, -3*s, 6*s, 3*s); ctx.fillRect(12*s, -6*s, 3*s, 6*s);
+
+        // Right Hand Holding Carrot to Mouth & Munching!
+        const munch = Math.floor(Math.sin(Date.now() * 0.02) * 2);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(-6*s, -6*s + munch*s, 4*s, 4*s);
+        // Carrot
+        ctx.fillStyle = '#f97316'; ctx.fillRect(-10*s, -8*s + munch*s, 6*s, 4*s);
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(-14*s, -9*s + munch*s, 4*s, 5*s);
+
+        // Pixel Crunch Crumbs
+        if (munch > 0) {
+          ctx.fillStyle = '#f97316';
+          ctx.fillRect(-4*s, -11*s, 2*s, 2*s);
+          ctx.fillRect(-2*s, -7*s, 2*s, 2*s);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    /* BUGS BUNNY LEANING & CARROT MUNCHING ENGINE FOR SPECS SECTION */
     let rabbitAnimTriggered = false;
 
     function triggerRabbitSpecsAnimation() {
@@ -1295,79 +1372,37 @@
       const wrapper = document.querySelector('.specs-wrapper');
       if (!canvas || !wrapper) return;
 
-      canvas.width = wrapper.clientWidth;
-      canvas.height = wrapper.clientHeight + 80;
+      canvas.width = wrapper.clientWidth + 140;
+      canvas.height = 460;
       const ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = false;
 
-      let rabbitX = -120;
-      const targetX = canvas.width - 90;
-      let phase = 'pushing'; // 'pushing' -> 'leaning'
-      let tick = 0;
+      // Target position: LEANING ON THE LEFT SIDE OF CARD 1!
+      const card1 = document.getElementById('card-spec-1');
+      const card1Left = card1 ? card1.offsetLeft : 60;
+      const leanTargetX = card1Left - 10;
 
-      function animateBugsBunny() {
-        tick++;
+      let rabbitX = -100;
+      let phase = 'walking'; // 'walking' -> 'leaning'
+
+      function animateBugsBunnyLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (phase === 'pushing') {
-          rabbitX += 10;
-          if (rabbitX >= targetX) {
-            rabbitX = targetX;
+        if (phase === 'walking') {
+          rabbitX += 7;
+          if (rabbitX >= leanTargetX) {
+            rabbitX = leanTargetX;
             phase = 'leaning';
           }
-
-          // Bugs Bunny Pushing Stance Math
-          const pushLean = Math.sin(tick * 0.4) * 4;
-          const rY = 180 + pushLean;
-
-          ctx.save();
-          ctx.translate(Math.floor(rabbitX), Math.floor(rY));
-          
-          // Heavy Pushing Dust Particles
-          ctx.fillStyle = '#d97706';
-          for(let d=0; d<3; d++) {
-            const dustX = -20 - (d * 14);
-            const dustY = 40 + Math.sin(tick + d)*6;
-            ctx.fillRect(Math.floor(dustX), Math.floor(dustY), 6, 6);
-          }
-
-          // Bugs Bunny Pushing Sprite
-          ctx.font = '56px sans-serif';
-          ctx.fillText('💪🐇', -30, 30);
-          ctx.restore();
-
+          draw16BitBugsBunny(ctx, rabbitX, 190, 'walk', 4.5);
         } else if (phase === 'leaning') {
-          // Bugs Bunny Leaning against Card 3 & Munching Carrot!
-          const rY = 180;
-          const munchBob = Math.floor(Math.sin(tick * 0.3) * 3);
-
-          ctx.save();
-          ctx.translate(Math.floor(targetX), Math.floor(rY));
-
-          // Leaning Bunny Sprite
-          ctx.font = '64px sans-serif';
-          ctx.fillText('🐇', -20, 30);
-
-          // Animated Carrot in Hand Munching into Mouth
-          ctx.font = '32px sans-serif';
-          ctx.fillText('🥕', -45 + munchBob, 10 - munchBob);
-
-          // Munching Crunch Particles!
-          if (tick % 6 < 3) {
-            ctx.fillStyle = '#f97316';
-            ctx.fillRect(-28, -5, 5, 5);
-            ctx.fillRect(-35, 12, 4, 4);
-            ctx.fillStyle = '#fde047';
-            ctx.fillRect(-22, 5, 4, 4);
-          }
-
-          ctx.restore();
+          draw16BitBugsBunny(ctx, leanTargetX, 190, 'lean_munch', 4.5);
         }
 
-        requestAnimationFrame(animateBugsBunny);
+        requestAnimationFrame(animateBugsBunnyLoop);
       }
 
-      animateBugsBunny();
+      animateBugsBunnyLoop();
     }
 
     function initSpecsObserver() {
