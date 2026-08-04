@@ -288,31 +288,27 @@
     .step-title { font-family: var(--font-stardew); font-size: 22px; color: #fff; margin-bottom: 14px; text-shadow: 2px 2px 0 #000; }
     .step-desc { font-size: 16px; color: #e2d1c3; line-height: 1.65; }
 
-    /* SPECS SECTION & RABBIT PUSH ANIMATION STYLES */
+    /* BUGS BUNNY BLOCK PUSHING SPECS STYLES */
     #specs { padding: 100px 40px; max-width: 1200px; margin: 0 auto; position: relative; overflow: visible; }
     .section-header { text-align: center; margin-bottom: 64px; }
     .section-title { font-family: var(--font-stardew); font-size: 32px; color: var(--stardew-gold); margin-bottom: 14px; text-shadow: 3px 3px 0 #000; }
     .section-sub { color: var(--text-muted); font-size: 18px; }
 
-    .specs-wrapper { position: relative; width: 100%; }
+    .specs-wrapper { position: relative; width: 100%; min-height: 380px; }
 
     #rabbitCanvas {
-      position: absolute; top: -60px; left: 0; width: 100%; height: 120px;
+      position: absolute; top: -60px; left: 0; width: 100%; height: 440px;
       pointer-events: none; z-index: 50; image-rendering: pixelated;
     }
 
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 36px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 0; transition: opacity 0.3s ease; }
+    .features-grid.visible { opacity: 1; }
 
     .feature-card {
       padding: 40px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
       border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -7px;
       border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
-      opacity: 0; transform: translateX(-120px) scale(0.85);
-    }
-
-    .feature-card.pushed-in {
-      opacity: 1; transform: translateX(0) scale(1);
+      position: relative;
     }
 
     .feature-icon { font-size: 52px; margin-bottom: 22px; }
@@ -667,10 +663,10 @@
       </div>
 
       <div class="specs-wrapper">
-        <!-- RABBIT PUSHING CARDS ANIMATION CANVAS -->
+        <!-- RABBIT BUGS BUNNY BLOCK PUSHING CANVAS -->
         <canvas id="rabbitCanvas"></canvas>
 
-        <div class="features-grid" id="featuresGrid">
+        <div class="features-grid visible" id="featuresGrid">
           <div class="stardew-card feature-card" id="card-spec-1">
             <div class="feature-icon">🌾</div>
             <h3 class="feature-title">5x5 PIXEL FARMING CYCLES</h3>
@@ -1288,7 +1284,7 @@
       }
     }
 
-    /* RABBIT HOPPING & CARDS PUSHING ANIMATION ENGINE FOR SPECS SECTION */
+    /* BUGS BUNNY BLOCK PUSHING & LEANING CARROT EATING ANIMATION ENGINE */
     let rabbitAnimTriggered = false;
 
     function triggerRabbitSpecsAnimation() {
@@ -1300,68 +1296,78 @@
       if (!canvas || !wrapper) return;
 
       canvas.width = wrapper.clientWidth;
-      canvas.height = 120;
+      canvas.height = wrapper.clientHeight + 80;
       const ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = false;
 
-      const cards = [
-        document.getElementById('card-spec-1'),
-        document.getElementById('card-spec-2'),
-        document.getElementById('card-spec-3')
-      ];
-
-      let rabbitX = -80;
-      const speed = 14;
-      const cardXPositions = [canvas.width * 0.16, canvas.width * 0.50, canvas.width * 0.83];
-      const cardPushed = [false, false, false];
+      let rabbitX = -120;
+      const targetX = canvas.width - 90;
+      let phase = 'pushing'; // 'pushing' -> 'leaning'
       let tick = 0;
 
-      function animateRabbitRun() {
+      function animateBugsBunny() {
         tick++;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        rabbitX += speed;
-
-        // Rabbit hopping animation math
-        const hopY = Math.abs(Math.sin(tick * 0.3)) * 22;
-        const currentY = 70 - hopY;
-
-        // Render Pixel Rabbit 🐇 + Carrot 🥕 in mouth
-        ctx.save();
-        ctx.translate(Math.floor(rabbitX), Math.floor(currentY));
-        ctx.font = '40px sans-serif';
-        ctx.fillText('🐇', 0, 0);
-        ctx.font = '24px sans-serif';
-        ctx.fillText('🥕', 22, -10 + Math.sin(tick*0.5)*3);
-        ctx.restore();
-
-        // Render floating carrot crumbs
-        ctx.fillStyle = '#f97316';
-        for(let c=0; c<4; c++) {
-          const crumbX = rabbitX - 15 - (c * 12);
-          const crumbY = 70 + Math.sin(tick + c) * 10;
-          if (crumbX > 0) ctx.fillRect(Math.floor(crumbX), Math.floor(crumbY), 5, 5);
-        }
-
-        // Check if rabbit passes card positions and pushes them into place!
-        for(let i=0; i<3; i++) {
-          if (rabbitX >= cardXPositions[i] && !cardPushed[i]) {
-            cardPushed[i] = true;
-            if (cards[i]) {
-              cards[i].classList.add('pushed-in');
-              playSound('harvest');
-            }
+        if (phase === 'pushing') {
+          rabbitX += 10;
+          if (rabbitX >= targetX) {
+            rabbitX = targetX;
+            phase = 'leaning';
           }
+
+          // Bugs Bunny Pushing Stance Math
+          const pushLean = Math.sin(tick * 0.4) * 4;
+          const rY = 180 + pushLean;
+
+          ctx.save();
+          ctx.translate(Math.floor(rabbitX), Math.floor(rY));
+          
+          // Heavy Pushing Dust Particles
+          ctx.fillStyle = '#d97706';
+          for(let d=0; d<3; d++) {
+            const dustX = -20 - (d * 14);
+            const dustY = 40 + Math.sin(tick + d)*6;
+            ctx.fillRect(Math.floor(dustX), Math.floor(dustY), 6, 6);
+          }
+
+          // Bugs Bunny Pushing Sprite
+          ctx.font = '56px sans-serif';
+          ctx.fillText('💪🐇', -30, 30);
+          ctx.restore();
+
+        } else if (phase === 'leaning') {
+          // Bugs Bunny Leaning against Card 3 & Munching Carrot!
+          const rY = 180;
+          const munchBob = Math.floor(Math.sin(tick * 0.3) * 3);
+
+          ctx.save();
+          ctx.translate(Math.floor(targetX), Math.floor(rY));
+
+          // Leaning Bunny Sprite
+          ctx.font = '64px sans-serif';
+          ctx.fillText('🐇', -20, 30);
+
+          // Animated Carrot in Hand Munching into Mouth
+          ctx.font = '32px sans-serif';
+          ctx.fillText('🥕', -45 + munchBob, 10 - munchBob);
+
+          // Munching Crunch Particles!
+          if (tick % 6 < 3) {
+            ctx.fillStyle = '#f97316';
+            ctx.fillRect(-28, -5, 5, 5);
+            ctx.fillRect(-35, 12, 4, 4);
+            ctx.fillStyle = '#fde047';
+            ctx.fillRect(-22, 5, 4, 4);
+          }
+
+          ctx.restore();
         }
 
-        if (rabbitX < canvas.width + 120) {
-          requestAnimationFrame(animateRabbitRun);
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        requestAnimationFrame(animateBugsBunny);
       }
 
-      animateRabbitRun();
+      animateBugsBunny();
     }
 
     function initSpecsObserver() {
