@@ -1322,6 +1322,52 @@
       } catch(e) {}
     }
 
+    function updatePassUI() {
+      const badge = document.getElementById('passStatusBadge');
+      const speedLabel = document.getElementById('speedMultLabel');
+
+      if (passLevel === 'monthly') {
+        if (badge) {
+          badge.className = 'stat-pass-badge';
+          badge.style.background = 'rgba(59, 130, 246, 0.2)';
+          badge.style.color = '#60a5fa';
+          badge.style.borderColor = '#3b82f6';
+          badge.innerText = 'MONTHLY PASS (2x Speed + 10% Fee)';
+        }
+        if (speedLabel) {
+          speedLabel.innerText = '2x (MONTHLY PASS)';
+          speedLabel.style.color = '#60a5fa';
+        }
+      } else if (passLevel === 'annual') {
+        if (badge) {
+          badge.className = 'stat-pass-badge';
+          badge.style.background = 'rgba(52, 211, 153, 0.2)';
+          badge.style.color = '#34d399';
+          badge.style.borderColor = '#34d399';
+          badge.innerText = 'ANNUAL PASS (3x Speed + 0% Fee)';
+        }
+        if (speedLabel) {
+          speedLabel.innerText = '3x (ANNUAL PASS)';
+          speedLabel.style.color = '#34d399';
+        }
+      } else {
+        if (badge) {
+          badge.className = 'stat-pass-badge';
+          badge.style.background = 'rgba(239, 68, 68, 0.2)';
+          badge.style.color = '#f87171';
+          badge.style.borderColor = '#ef4444';
+          badge.innerText = 'FREE PASS (Hard Mode: 1x Speed + 30% Fee)';
+        }
+        if (speedLabel) {
+          speedLabel.innerText = '1x (Hard Mode)';
+          speedLabel.style.color = '#f87171';
+        }
+      }
+
+      renderSeedShop();
+      for(let i=0; i<25; i++) updateTileDOM(i);
+    }
+
     function initStaticDOMFarmGrid() {
       const gridEl = document.getElementById('farmGrid'); if (!gridEl) return;
       gridEl.innerHTML = '';
@@ -1401,7 +1447,6 @@
       document.getElementById('coinCount').innerText = coins;
       document.getElementById('dayCount').innerText = day;
       document.getElementById('usdcVaultBalance').innerText = `${usdcVault.toFixed(2)} USDC`;
-      document.getElementById('speedMultLabel').innerText = `${speedMultiplier}x (${passLevel.toUpperCase()})`;
     }
 
     function renderSeedShop() {
@@ -1598,6 +1643,7 @@
           setTimeout(() => {
             loading.style.display = 'none';
             document.getElementById('game-view').style.display = 'block';
+            updatePassUI();
             fetchOnChainUSDCBalance();
           }, 200);
         }
@@ -1657,7 +1703,7 @@
       }
     }
 
-    /* REAL WEB3 PASS SUBSCRIPTION WITH EXACT AMOUNT & BUG-FREE CONFIRMATION */
+    /* REAL WEB3 PASS SUBSCRIPTION WITH EXACT DIRECT AMOUNT & GUARANTEED PASS ACTIVATION */
     async function subscribePass(type, amountUSDC) {
       if (!userAddress) {
         const connected = await connectWallet();
@@ -1665,25 +1711,14 @@
       }
 
       try {
-        const balanceWei = await fetchOnChainUSDCBalance();
-        const requiredWei = ethers.parseEther(amountUSDC.toString());
-
-        showPixelToast(`Please confirm ${amountUSDC}.00 USDC in your Web3 Wallet...`, "⌛");
+        showPixelToast(`Confirm ${amountUSDC}.00 USDC in your Web3 Wallet...`, "⌛");
         const signer = await provider.getSigner();
 
-        let tx;
-        if (balanceWei < requiredWei) {
-          showPixelToast(`Notice: Sending Testnet Pass Demo Tx for ${type.toUpperCase()} PASS...`, "ℹ️");
-          tx = await signer.sendTransaction({
-            to: TREASURY_ADDRESS,
-            value: ethers.parseEther("0.0002")
-          });
-        } else {
-          tx = await signer.sendTransaction({
-            to: TREASURY_ADDRESS,
-            value: requiredWei
-          });
-        }
+        // ALWAYS send the exact amount requested without any fallback checks overriding it!
+        const tx = await signer.sendTransaction({
+          to: TREASURY_ADDRESS,
+          value: ethers.parseEther(amountUSDC.toString())
+        });
 
         showPixelToast("Waiting for Arc Testnet block confirmation...", "⌛");
         await tx.wait(); // Wait for transaction confirmation!
@@ -1693,36 +1728,19 @@
         if (type === 'monthly') {
           speedMultiplier = 2;
           marketplaceFeePct = 10;
-          const badge = document.getElementById('passStatusBadge');
-          if (badge) {
-            badge.className = 'stat-pass-badge';
-            badge.style.background = 'rgba(59, 130, 246, 0.2)';
-            badge.style.color = '#60a5fa';
-            badge.style.borderColor = '#3b82f6';
-            badge.innerText = 'MONTHLY PASS (2x Speed + Auto Water)';
-          }
         } else if (type === 'annual') {
           speedMultiplier = 3;
           marketplaceFeePct = 0;
-          const badge = document.getElementById('passStatusBadge');
-          if (badge) {
-            badge.className = 'stat-pass-badge';
-            badge.style.background = 'rgba(52, 211, 153, 0.2)';
-            badge.style.color = '#34d399';
-            badge.style.borderColor = '#34d399';
-            badge.innerText = 'ANNUAL PASS (3x Speed + 0% Fee)';
-          }
         }
 
-        renderSeedShop();
-        for(let i=0; i<25; i++) updateTileDOM(i);
+        updatePassUI();
         triggerCelebration();
 
         showPixelToast(`🎉 ${amountUSDC} USDC ${type.toUpperCase()} PASS ACTIVATED! Tx: ${tx.hash.substring(0,10)}...`, "👑");
         await fetchOnChainUSDCBalance();
       } catch(err) {
         console.error("Subscribe Pass Error:", err);
-        showPixelToast("Subscription cancelled. Pass not activated.", "⚠️");
+        showPixelToast("Subscription cancelled or insufficient USDC.", "⚠️");
       }
     }
 
