@@ -301,7 +301,7 @@
       pointer-events: none; z-index: 50; image-rendering: pixelated;
     }
 
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 1; margin-left: 180px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 1; margin-left: 220px; }
 
     .feature-card {
       padding: 40px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
@@ -1299,13 +1299,13 @@
       if (!canvas || !wrapper) return;
 
       canvas.width = wrapper.clientWidth;
-      canvas.height = 460;
+      canvas.height = 440;
       const ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = false;
 
-      // Bugs Bunny sits at x = 0px to x = 220px, with his right elbow touching Card 1 at x = 180px!
+      // Bugs Bunny sits at x = 10px to x = 220px. Right elbow touches Card 1 at x = 220px!
       const targetBugsX = 10;
-      let bugsX = -240;
+      let bugsX = -200;
       let tick = 0;
 
       function renderBugsBunnyLoop() {
@@ -1313,7 +1313,7 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (bugsX < targetBugsX) {
-          bugsX += 10;
+          bugsX += 12;
           if (bugsX > targetBugsX) bugsX = targetBugsX;
         }
 
@@ -1322,11 +1322,10 @@
         const earWiggle = Math.sin(tick * 0.08) * 0.02;
 
         ctx.save();
-        ctx.translate(Math.floor(bugsX), 20 + munchBob);
+        ctx.translate(Math.floor(bugsX), 10 + munchBob);
         ctx.rotate(earWiggle);
 
         // Draw exact 1:1 pixel art Bugs Bunny from user's uploaded image!
-        // Scale to 210px width by 330px height
         ctx.drawImage(bugsImg, 0, 0, 210, 330);
 
         // Draw Animated Pixel Carrot Munching Particles!
@@ -1343,13 +1342,13 @@
         requestAnimationFrame(renderBugsBunnyLoop);
       }
 
-      if (bugsImg.complete) {
-        renderBugsBunnyLoop();
-      } else {
-        bugsImg.onload = renderBugsBunnyLoop;
-      }
+      renderBugsBunnyLoop();
     }
 
+    // Always trigger animation on load as well as scroll observer!
+    window.addEventListener('load', () => {
+      setTimeout(triggerRabbitSpecsAnimation, 500);
+    });
     /* CROP PARTICLE EXPLOSION ENGINE & CELEBRATION */
     function triggerCropExplosion(x, y, cropIcon) {
       const canvas = document.getElementById('celebrationCanvas'); if (!canvas) return;
