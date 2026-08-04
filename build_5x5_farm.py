@@ -36,14 +36,14 @@ html_content = """<!DOCTYPE html>
       --font-sans: 'Outfit', sans-serif;
     }
 
-    /* RETRO PIXEL ART MOUSE CURSOR (Pixel Hand Pointer Data URI) */
+    /* LARGE 32x32 CRISP PIXEL ART MOUSE CURSORS */
     *, html, body {
-      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='%23fde047' stroke='%23000000' stroke-width='1.5' d='M2,2 L14,14 L9,14 L12,21 L8,21 L5,14 L2,14 Z'/></svg>"), auto !important;
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path fill='%23000000' d='M0,0 L0,22 L6,16 L12,28 L17,26 L11,14 L19,14 Z'/><path fill='%23fde047' d='M2,3 L2,18 L6,14 L12,25 L14,24 L9,13 L16,13 Z'/><path fill='%23ffffff' d='M3,4 L3,14 L5,12 L8,18 L9,17 L6,11 L12,11 Z'/></svg>") 0 0, auto !important;
       box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none;
     }
 
-    button, a, select, input, .grid-tile, .seed-item, .stardew-btn, .cashout-btn {
-      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='%2334d399' stroke='%23000000' stroke-width='1.5' d='M2,2 L14,14 L9,14 L12,21 L8,21 L5,14 L2,14 Z'/></svg>"), pointer !important;
+    button, a, select, input, .grid-tile, .seed-item, .stardew-btn, .cashout-btn, .tab-btn {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path fill='%23000000' d='M0,0 L0,24 L7,17 L13,30 L18,28 L12,15 L21,15 Z'/><path fill='%2334d399' d='M2,3 L2,20 L7,15 L13,27 L15,26 L10,14 L18,14 Z'/><path fill='%23ffffff' d='M3,4 L3,16 L6,13 L9,20 L10,19 L7,12 L14,12 Z'/></svg>") 0 0, pointer !important;
     }
 
     html, body {
@@ -1668,7 +1668,6 @@ html_content = """<!DOCTYPE html>
       function drawLoadingIcon() {
         lTick++; lCtx.clearRect(0, 0, 120, 120);
 
-        // Render bouncing grass mound base
         lCtx.fillStyle = '#599632';
         lCtx.beginPath();
         lCtx.ellipse(60, 95, 45, 14, 0, 0, Math.PI * 2);
@@ -1678,14 +1677,12 @@ html_content = """<!DOCTYPE html>
         lCtx.ellipse(60, 90, 36, 10, 0, 0, Math.PI * 2);
         lCtx.fill();
 
-        // Cycle through crops bouncing smoothly
         const cropIndex = Math.floor(lTick / 18) % loadingCrops.length;
         const bounceY = Math.abs(Math.sin(lTick * 0.15)) * 14;
 
         lCtx.font = '54px sans-serif';
         lCtx.fillText(loadingCrops[cropIndex], 33, 75 - bounceY);
 
-        // Particle sparkles around growing crop
         lCtx.fillStyle = '#fde047';
         for(let s = 0; s < 4; s++) {
           const sx = 20 + (lTick * 3 + s * 25) % 80;
@@ -1699,7 +1696,7 @@ html_content = """<!DOCTYPE html>
 
       let progress = 0; const progressBar = document.getElementById('loadingBar');
       const interval = setInterval(() => {
-        progress += 10; // Slightly longer loading duration (~2.2 seconds)
+        progress += 10;
         if (progress >= 100) {
           progress = 100; clearInterval(interval); cancelAnimationFrame(animId);
           setTimeout(() => {
@@ -1902,4 +1899,4 @@ html_content = """<!DOCTYPE html>
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("CUSTOM PIXEL ART CURSOR, PASS BUTTON STATES & CROP LOADING ANIMATION ADDED SUCCESSFULLY!")
+print("LARGE 32x32 CRISP PIXEL ART MOUSE CURSORS UPDATED SUCCESSFULLY!")
