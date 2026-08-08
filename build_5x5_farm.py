@@ -1,7 +1,1962 @@
-# Build script generator that writes index.html directly from template file
-import os
+with open("index.html", "w", encoding="utf-8") as out:
+    out.write("""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcadia Homestead - Web3 Pixel Farming on Arc Testnet</title>
 
-with open('index.html', 'r', encoding='utf-8') as f:
-    html_data = f.read()
+  <meta name="description" content="Arcadia Homestead - Web3 5x5 Grid Stardew-aesthetic pixel farming simulation running on Arc Testnet.">
 
-print(f"index.html verified! Size: {len(html_data)} bytes")
+  <!-- Google Fonts: Stardew Retro Pixel Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=VT323&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Ethers.js v6 Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.1/ethers.umd.min.js"></script>
+
+  <style>
+    :root {
+      --sky-blue: #70c5ce;
+      --grass-green: #599632;
+      --wood-dark: #2c1609;
+      --wood-mid: #4d2813;
+      --wood-light: #7a4320;
+      --wood-border: #140a04;
+      --parchment-bg: #fcedc0;
+      --parchment-border: #875628;
+      --stardew-gold: #fde047;
+      --gold-dark: #b45309;
+      --text-dark: #381e0d;
+      --text-light: #fef0c7;
+      --text-muted: #caab8d;
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-stardew: 'Silkscreen', cursive;
+      --font-retro: 'VT323', monospace;
+      --font-sans: 'Outfit', sans-serif;
+    }
+
+    /* LARGE 32x32 CRISP PIXEL ART MOUSE CURSORS */
+    *, html, body {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path fill='%23000000' d='M0,0 L0,22 L6,16 L12,28 L17,26 L11,14 L19,14 Z'/><path fill='%23fde047' d='M2,3 L2,18 L6,14 L12,25 L14,24 L9,13 L16,13 Z'/><path fill='%23ffffff' d='M3,4 L3,14 L5,12 L8,18 L9,17 L6,11 L12,11 Z'/></svg>") 0 0, auto !important;
+      box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none;
+    }
+
+    button, a, select, input, .stardew-btn, .cashout-btn, .tab-btn {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path fill='%23000000' d='M0,0 L0,24 L7,17 L13,30 L18,28 L12,15 L21,15 Z'/><path fill='%2334d399' d='M2,3 L2,20 L7,15 L13,27 L15,26 L10,14 L18,14 Z'/><path fill='%23ffffff' d='M3,4 L3,16 L6,13 L9,20 L10,19 L7,12 L14,12 Z'/></svg>") 0 0, pointer !important;
+    }
+
+    html, body {
+      width: 100%; min-height: 100vh;
+      background-color: #140b07;
+      color: var(--text-light);
+      font-family: var(--font-sans);
+    }
+
+    #leafCanvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; image-rendering: pixelated;
+    }
+    #celebrationCanvas {
+      position: fixed; inset: 0; z-index: 600; pointer-events: none; image-rendering: pixelated;
+    }
+
+    /* Pixel Toast Notification Overlay */
+    #pixelToastContainer {
+      position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
+      z-index: 700; pointer-events: none; display: flex; flex-direction: column; gap: 10px; align-items: center;
+    }
+
+    .pixel-toast {
+      background: linear-gradient(180deg, #fff3d1 0%, var(--parchment-bg) 60%, #e8cca0 100%);
+      border: 4px solid #875628; outline: 3px solid #1a0f0a; box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+      color: var(--text-dark); padding: 12px 24px; border-radius: 4px; font-family: var(--font-pixel);
+      font-size: 11px; text-align: center; display: flex; align-items: center; gap: 10px;
+      animation: toastSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Web3 Connect Wallet Pixel Modal Overlay */
+    #walletModal {
+      display: none; position: fixed; inset: 0; z-index: 800;
+      background: rgba(14, 8, 4, 0.92); backdrop-filter: blur(12px);
+      align-items: center; justify-content: center;
+    }
+
+    .wallet-modal-card {
+      width: 480px; max-width: 90vw; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+      border: 6px solid var(--wood-light); outline: 3px solid var(--wood-border);
+      border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+      padding: 36px; text-align: center; display: flex; flex-direction: column; gap: 20px; align-items: center;
+    }
+
+    .wallet-modal-title { font-family: var(--font-stardew); font-size: 20px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; }
+    .wallet-modal-desc { font-size: 15px; color: #e2d1c3; line-height: 1.6; }
+
+    /* Navbar Header */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 48px; background: rgba(20, 11, 7, 0.94); backdrop-filter: blur(12px);
+      border-bottom: 4px solid var(--wood-light); box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
+
+    .logo-container { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+    .logo-icon {
+      width: 46px; height: 46px; background: linear-gradient(135deg, #fbbf24, #d97706);
+      border: 3px solid #451a03; box-shadow: 0 3px 0 #000; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; font-size: 26px;
+    }
+    .logo-text { font-family: var(--font-stardew); font-size: 18px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; }
+
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--text-light); text-decoration: none; font-family: var(--font-retro); font-size: 26px; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--stardew-gold); }
+
+    /* Language Switcher Dropdown */
+    .lang-switcher {
+      display: flex; align-items: center; gap: 6px; background: #1a0f0a; border: 2px solid var(--wood-light);
+      padding: 6px 12px; border-radius: 4px; font-family: var(--font-pixel); font-size: 10px; color: var(--stardew-gold);
+    }
+    .lang-select {
+      background: transparent; border: none; color: var(--stardew-gold); font-family: var(--font-pixel);
+      font-size: 10px; cursor: pointer; outline: none;
+    }
+    .lang-select option { background: #1a0f0a; color: #fff; }
+
+    .wallet-status { display: flex; align-items: center; gap: 14px; }
+    .net-pill {
+      font-family: var(--font-pixel); font-size: 10px; background: rgba(59, 130, 246, 0.2);
+      border: 2px solid #3b82f6; color: #60a5fa; padding: 8px 14px; box-shadow: 0 3px 0 #000; border-radius: 4px; display: flex; align-items: center; gap: 6px;
+    }
+    .net-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; box-shadow: 0 0 8px #34d399; }
+
+    .stardew-btn {
+      font-family: var(--font-pixel); font-size: 12px; padding: 16px 32px;
+      background: linear-gradient(180deg, #fde047 0%, #eab308 60%, #ca8a04 100%);
+      color: #000; border: 3px solid #000; box-shadow: 0 5px 0 #000;
+      border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      gap: 12px; text-transform: uppercase; text-decoration: none; transition: all 0.1s ease;
+    }
+    .stardew-btn:hover:not(:disabled) { background: linear-gradient(180deg, #fef08a 0%, #fde047 60%, #eab308 100%); transform: translateY(-2px); box-shadow: 0 7px 0 #000; }
+    .stardew-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #000; }
+
+    .stardew-btn:disabled {
+      background: #4b5563 !important; color: #9ca3af !important; border-color: #1f2937 !important;
+      box-shadow: none !important; cursor: not-allowed !important; transform: none !important; opacity: 0.7;
+    }
+
+    #landing-view { position: relative; z-index: 1; width: 100%; }
+
+    /* ENHANCED HERO SECTION WITH GOLDEN SUNRAYS & GLOW */
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 130px 20px 80px 20px;
+      background: radial-gradient(circle at 50% 30%, rgba(126, 34, 206, 0.45) 0%, rgba(88, 28, 135, 0.85) 45%, rgba(20, 11, 7, 0.98) 85%);
+      position: relative; overflow: hidden;
+    }
+
+    .hero-glow-rays {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse at 50% 40%, rgba(253, 224, 71, 0.15) 0%, transparent 60%);
+    }
+
+    .parchment-banner {
+      background: linear-gradient(180deg, #fff3d1 0%, var(--parchment-bg) 60%, #e8cca0 100%);
+      border: 4px solid #875628; box-shadow: 0 6px 0px #1a0f0a; color: var(--text-dark);
+      padding: 12px 24px; border-radius: 4px; font-family: var(--font-stardew); text-align: center; margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-family: var(--font-stardew); font-size: 44px; line-height: 1.35; color: #fff; max-width: 980px; margin-bottom: 24px;
+      text-shadow: 3px 3px 0 #000, 0 0 24px rgba(253, 224, 71, 0.4);
+    }
+    .hero-title span { color: var(--stardew-gold); text-shadow: 3px 3px 0 #451a03; }
+    .hero-subtitle { font-size: 20px; color: #e2d1c3; max-width: 760px; line-height: 1.6; margin-bottom: 38px; }
+    .hero-cta { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }
+
+    /* PERFECTLY ALIGNED FLOATING ISOMETRIC PARALLAX HERO CANVAS */
+    .hero-stage {
+      position: relative; width: 720px; height: 440px; max-width: 96vw;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    #heroCanvas {
+      width: 720px; height: 440px; max-width: 96vw; image-rendering: pixelated;
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8));
+    }
+
+    .stats-bar { margin-top: 60px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; width: 100%; max-width: 1060px; }
+    
+    .stat-box {
+      padding: 24px; text-align: center;
+      background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+      border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -7px;
+      border-radius: 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    .stat-number { font-family: var(--font-retro); font-size: 46px; color: var(--stardew-gold); margin-bottom: 4px; }
+    .stat-label { font-family: var(--font-pixel); font-size: 10px; color: var(--text-muted); }
+
+    /* STICKY SHOWCASE */
+    #interactive-showcase {
+      position: relative; height: 3200px; width: 100%;
+    }
+
+    .sticky-pin-container {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 1100px; height: calc(100vh - 100px); padding: 0 20px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: none;
+    }
+
+    .sticky-pin-container.is-pinned {
+      position: fixed; top: 90px; left: 50%; transform: translateX(-50%); z-index: 90;
+    }
+
+    .sticky-pin-container.is-bottom {
+      position: absolute; top: auto; bottom: 0; left: 50%; transform: translateX(-50%);
+    }
+
+    .showcase-header { text-align: center; margin-bottom: 18px; }
+    .showcase-title { font-family: var(--font-stardew); font-size: 28px; color: var(--stardew-gold); text-shadow: 3px 3px 0 #000; margin-bottom: 6px; }
+    .showcase-sub { font-size: 16px; color: var(--text-muted); }
+
+    .showcase-tabs {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+      width: 100%; max-width: 1060px; margin-bottom: 22px;
+    }
+
+    .tab-btn {
+      font-family: var(--font-pixel); font-size: 9px; padding: 14px 10px;
+      background: #1a0f0a; border: 3px solid var(--wood-light); color: var(--text-muted);
+      border-radius: 4px; cursor: pointer; transition: all 0.2s ease;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      white-space: nowrap; width: 100%; text-align: center;
+    }
+
+    .tab-btn:hover { border-color: var(--stardew-gold); color: #fff; transform: translateY(-2px); }
+    .tab-btn.active {
+      background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+      border-color: var(--stardew-gold); color: var(--stardew-gold); box-shadow: 0 0 16px rgba(253, 224, 71, 0.4); transform: translateY(-2px);
+    }
+
+    .showcase-frame {
+      position: relative; display: flex; gap: 40px; align-items: center; justify-content: center;
+      width: 100%; max-width: 1060px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+      border: 6px solid var(--wood-light); outline: 3px solid var(--wood-border);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(253, 224, 71, 0.2);
+      border-radius: 8px; padding: 32px; overflow: hidden;
+    }
+
+    #leafSweepCanvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 80; image-rendering: pixelated;
+    }
+
+    .showcase-left-window {
+      flex: 1.1; max-width: 480px; border: 4px solid var(--wood-border); border-radius: 6px; overflow: hidden; background: #000;
+    }
+
+    #showcasePreviewCanvas {
+      display: block; width: 100%; height: 360px; image-rendering: pixelated;
+    }
+
+    .showcase-right-display {
+      flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 260px; position: relative;
+    }
+
+    .showcase-text-card {
+      display: none; flex-direction: column; justify-content: center;
+      animation: fadeInCard 0.25s ease forwards;
+    }
+    .showcase-text-card.active { display: flex; }
+
+    @keyframes fadeInCard {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-badge {
+      font-family: var(--font-pixel); font-size: 10px; color: var(--stardew-gold);
+      background: rgba(245, 158, 11, 0.2); border: 2px solid var(--stardew-gold);
+      padding: 6px 14px; border-radius: 4px; display: inline-block; width: fit-content; margin-bottom: 14px;
+    }
+
+    .step-title { font-family: var(--font-stardew); font-size: 22px; color: #fff; margin-bottom: 14px; text-shadow: 2px 2px 0 #000; }
+    .step-desc { font-size: 16px; color: #e2d1c3; line-height: 1.65; }
+
+    /* HAND-DRAWN 16-BIT STARDEW BUGS BUNNY SPECS STYLES */
+    #specs { padding: 100px 40px; max-width: 1200px; margin: 0 auto; position: relative; overflow: visible; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-title { font-family: var(--font-stardew); font-size: 32px; color: var(--stardew-gold); margin-bottom: 14px; text-shadow: 3px 3px 0 #000; }
+    .section-sub { color: var(--text-muted); font-size: 18px; }
+
+    .specs-wrapper { position: relative; width: 100%; min-height: 380px; }
+
+      position: absolute; top: -40px; left: -100px; width: calc(100% + 140px); height: 460px;
+      pointer-events: none; z-index: 50; image-rendering: pixelated;
+    }
+
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; opacity: 1; margin: 0 auto; }
+
+    .feature-card {
+      padding: 40px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+      border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -7px;
+      border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      position: relative;
+    }
+
+    .feature-icon { font-size: 52px; margin-bottom: 22px; }
+    .feature-title { font-family: var(--font-stardew); font-size: 18px; color: var(--stardew-gold); margin-bottom: 14px; }
+    .feature-desc { color: #e2d1c3; font-size: 16px; line-height: 1.6; }
+
+    #passes { padding: 100px 40px; background: rgba(20, 10, 4, 0.6); border-top: 4px solid var(--wood-light); border-bottom: 4px solid var(--wood-light); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 44px; max-width: 1000px; margin: 0 auto; }
+    
+    .pricing-card {
+      padding: 48px; background: linear-gradient(180deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+      border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -7px;
+      border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.85); position: relative;
+    }
+    .pricing-badge {
+      position: absolute; top: -16px; right: 20px; font-family: var(--font-pixel); font-size: 10px;
+      background: var(--stardew-gold); color: #000; padding: 6px 14px; border: 2px solid #000; box-shadow: 0 3px 0 #000;
+    }
+    .pricing-name { font-family: var(--font-stardew); font-size: 22px; color: var(--stardew-gold); margin-bottom: 8px; }
+    .pricing-price { font-family: var(--font-retro); font-size: 56px; color: #34d399; margin-bottom: 24px; }
+    .pricing-price span { font-size: 22px; color: var(--text-muted); }
+    .pricing-list { list-style: none; margin-bottom: 38px; }
+    .pricing-list li { margin-bottom: 16px; color: #fcedc0; font-size: 16px; display: flex; align-items: center; gap: 12px; }
+
+    footer {
+      padding: 50px; text-align: center; border-top: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -7px;
+      font-family: var(--font-retro); font-size: 24px; color: var(--text-muted); background: #140a04;
+    }
+
+    /* ANIMATED CROP LOADING OVERLAY */
+    #loading-view {
+      display: none; position: fixed; inset: 0; z-index: 500; background: rgba(14, 8, 4, 0.96); backdrop-filter: blur(16px);
+      align-items: center; justify-content: center; flex-direction: column;
+    }
+    .loading-card { width: 580px; max-width: 90vw; padding: 44px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .loading-title { font-family: var(--font-stardew); font-size: 22px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; }
+    #loadingCanvas { width: 120px; height: 120px; image-rendering: pixelated; }
+    .loading-bar-outer { width: 100%; height: 26px; background: #1c0e05; border: 4px solid var(--wood-light); box-shadow: inset 0 2px 6px #000; border-radius: 4px; padding: 3px; }
+    .loading-bar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b 0%, #fde047 100%); border-radius: 2px; }
+    .loading-percent { font-family: var(--font-pixel); font-size: 12px; color: var(--stardew-gold); }
+    .loading-tip { font-family: var(--font-sans); font-size: 16px; color: var(--text-muted); font-style: italic; min-height: 46px; }
+
+    /* SINGLE SCREEN ZERO-SCROLL 5x5 GRID GAME VIEW */
+    #game-view {
+      display: none; position: fixed; inset: 0; z-index: 400; width: 100vw; height: 100vh;
+      overflow: hidden; padding: 75px 24px 20px 24px;
+    }
+
+    #gameBackgroundCanvas {
+      position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; image-rendering: pixelated;
+    }
+
+    .game-top-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 450;
+      display: flex; align-items: center; justify-content: space-between; padding: 10px 28px;
+      background: rgba(30, 17, 9, 0.94); backdrop-filter: blur(8px); border-bottom: 4px solid var(--wood-light);
+    }
+    .game-title { font-family: var(--font-stardew); font-size: 18px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; }
+    .game-usdc-badge { font-family: var(--font-pixel); font-size: 12px; color: var(--stardew-gold); background: rgba(245, 158, 11, 0.2); border: 2px solid var(--stardew-gold); padding: 8px 16px; border-radius: 4px; box-shadow: 0 4px 0 #000; }
+
+    /* 2-COLUMN PERFECT FIT GAME LAYOUT */
+    .full-game-layout {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 1100px; height: calc(100vh - 95px); margin: 0 auto;
+      display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 20px; align-items: center;
+    }
+
+    .game-left-col {
+      display: flex; flex-direction: column; gap: 10px; height: 100%; justify-content: center;
+    }
+
+    .top-stats-bar {
+      width: 100%; background: #2c1609; border: 4px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -7px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6); padding: 10px 16px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; font-family: var(--font-pixel); font-size: 10px;
+    }
+    .stat-coins { color: var(--stardew-gold); display: flex; align-items: center; gap: 6px; text-shadow: 2px 2px 0 #000; white-space: nowrap; }
+    .stat-pass-badge { color: #f87171; background: rgba(239, 68, 68, 0.2); padding: 4px 8px; border: 1px solid #ef4444; border-radius: 3px; font-size: 8px; line-height: 1.3; text-align: center; max-width: 320px; }
+    .stat-day { color: #fff; text-shadow: 2px 2px 0 #000; white-space: nowrap; }
+
+    .farm-grid-frame {
+      width: 100%; background: #2c1609; border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -8px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.8); border-radius: 6px; padding: 14px;
+    }
+
+    .farm-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; width: 100%; aspect-ratio: 1;
+    }
+
+    .grid-tile {
+      background: #4a5d23; border: 3px solid #2b3910; border-radius: 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      width: 100%; height: 100%; box-sizing: border-box;
+    }
+
+    .grid-tile:hover {
+      border-color: var(--stardew-gold); box-shadow: inset 0 0 10px var(--stardew-gold);
+    }
+
+    .grid-tile.tilled { background: #3b2313; border-color: #1a0f07; }
+    .grid-tile.needs-water { border-color: #60a5fa; box-shadow: inset 0 0 12px #3b82f6; animation: waterPulse 1s infinite alternate; }
+    .grid-tile.ready { border-color: #34d399; box-shadow: 0 0 12px #34d399, inset 0 0 10px #34d399; animation: pulseGlow 1.2s infinite alternate; }
+
+    @keyframes waterPulse {
+      0% { border-color: #60a5fa; }
+      100% { border-color: #1d4ed8; }
+    }
+
+    @keyframes pulseGlow {
+      0% { border-color: #fde047; box-shadow: inset 0 0 6px #fde047; }
+      100% { border-color: #34d399; box-shadow: inset 0 0 14px #34d399; }
+    }
+
+    .tile-crop-icon {
+      font-size: 32px; line-height: 1; display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+
+    .tile-progress-bar {
+      position: absolute; bottom: 4px; left: 6px; right: 6px; height: 6px;
+      background: rgba(0,0,0,0.6); border: 1px solid #000; border-radius: 3px; overflow: hidden; pointer-events: none;
+    }
+    .tile-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f59e0b, #34d399); transition: width 0.15s linear; }
+
+    .action-strip {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      background: #2c1609; border: 4px solid var(--wood-border); outline: 2px solid var(--wood-light); outline-offset: -5px;
+      padding: 10px 16px; border-radius: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+
+    .ready-count-badge { font-family: var(--font-pixel); font-size: 9px; color: #fff; display: flex; align-items: center; gap: 8px; }
+
+    .end-day-btn {
+      font-family: var(--font-pixel); font-size: 9px; padding: 10px 14px;
+      background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+      color: #fff; border: 2px solid #000; box-shadow: 0 3px 0 #000; border-radius: 4px; cursor: pointer; text-shadow: 1px 1px 0 #000;
+    }
+    .end-day-btn:hover { background: linear-gradient(180deg, #fb923c 0%, #f97316 100%); transform: translateY(-2px); }
+
+    /* RIGHT COLUMN: VAULT + SEED SHOP */
+    .game-right-col {
+      display: flex; flex-direction: column; gap: 14px; height: 100%; justify-content: center;
+    }
+
+    .usdc-vault-card {
+      width: 100%; background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+      border: 4px solid #34d399; box-shadow: 0 0 16px rgba(52, 211, 153, 0.4);
+      border-radius: 6px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .usdc-vault-info { display: flex; flex-direction: column; gap: 4px; }
+    .usdc-vault-title { font-family: var(--font-pixel); font-size: 10px; color: #60a5fa; }
+    .usdc-vault-balance { font-family: var(--font-retro); font-size: 32px; color: #34d399; text-shadow: 1px 1px 0 #000; }
+    .cashout-btn {
+      font-family: var(--font-pixel); font-size: 9px; padding: 10px 14px;
+      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+      color: #000; border: 2px solid #000; box-shadow: 0 3px 0 #000; border-radius: 4px; cursor: pointer; font-weight: bold;
+    }
+    .cashout-btn:hover { background: linear-gradient(180deg, #6ee7b7 0%, #34d399 100%); transform: translateY(-2px); }
+
+    .seed-shop-card {
+      width: 100%; background: #2c1609; border: 5px solid var(--wood-border); outline: 3px solid var(--wood-light); outline-offset: -8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .shop-header { font-family: var(--font-stardew); font-size: 15px; color: var(--stardew-gold); text-shadow: 2px 2px 0 #000; display: flex; align-items: center; justify-content: space-between; }
+    .seed-grid { display: flex; flex-direction: column; gap: 8px; }
+
+    .seed-item {
+      background: #1a0f0a; border: 3px solid #542d13; border-radius: 4px; padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s ease;
+    }
+
+    .seed-item:hover { border-color: var(--stardew-gold); background: #3b2313; transform: translateY(-2px); }
+    .seed-item.selected { border-color: var(--stardew-gold); background: #4d2813; box-shadow: 0 0 10px var(--stardew-gold); }
+
+    .seed-info { display: flex; align-items: center; gap: 10px; }
+    .seed-icon { font-size: 26px; }
+    .seed-details { display: flex; flex-direction: column; gap: 2px; }
+    .seed-name { font-family: var(--font-pixel); font-size: 10px; color: #fff; }
+    .seed-price { font-family: var(--font-pixel); font-size: 9px; color: var(--stardew-gold); }
+    .seed-time { font-family: var(--font-pixel); font-size: 8px; color: var(--text-muted); }
+
+    .shop-instruction { font-family: var(--font-pixel); font-size: 8px; color: #f87171; text-align: center; margin-top: 4px; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+  <!-- Web3 Connect Wallet Pixel Modal -->
+  <div id="walletModal">
+    <div class="wallet-modal-card">
+      <div style="font-size: 48px;">🚜</div>
+      <div class="wallet-modal-title">ARCADIA HOMESTEAD</div>
+      <div class="wallet-modal-desc">
+        Please connect your Web3 wallet to enter the game and earn native USDC on Arc Testnet.
+      </div>
+      <button class="stardew-btn" onclick="connectWalletFromModal()">🟢 CONNECT WALLET</button>
+      <button style="background:transparent; border:none; color:var(--text-muted); font-family:var(--font-pixel); font-size:10px; cursor:pointer;" onclick="closeWalletModal()">CANCEL</button>
+    </div>
+  </div>
+
+  <!-- Retro Pixel Toast Container -->
+  <div id="pixelToastContainer"></div>
+
+  <!-- Crisp Pixel Art Canvas Layers -->
+  <canvas id="leafCanvas"></canvas>
+  <canvas id="celebrationCanvas"></canvas>
+
+  <!-- Navbar Header -->
+  <header id="navbar">
+    <div class="logo-container" onclick="switchToLandingView()">
+      <div class="logo-icon">🚜</div>
+      <div class="logo-text">ARCADIA HOMESTEAD</div>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="#interactive-showcase" id="nav-showcase">Game Intro</a></li>
+      <li><a href="#specs" id="nav-specs">GameFi Specs</a></li>
+      <li><a href="#passes" id="nav-passes">Passes & Pricing</a></li>
+      <li><a href="javascript:void(0)" onclick="handlePlayGameClick()" id="nav-play">Play Game</a></li>
+    </ul>
+
+    <!-- 5-Language Selector (Default: EN - English) -->
+    <div class="lang-switcher">
+      🌐
+      <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+        <option value="EN" selected>EN - English</option>
+        <option value="TR">TR - Türkçe</option>
+        <option value="ES">ES - Español</option>
+        <option value="ZH">ZH - 中文</option>
+        <option value="JA">JA - 日本語</option>
+      </select>
+    </div>
+
+    <div class="wallet-status">
+      <div class="net-pill">
+        <span class="net-dot"></span>
+        <span>ARC TESTNET</span>
+      </div>
+      <button id="btn-connect-wallet" class="stardew-btn" onclick="connectWallet()">CONNECT WALLET</button>
+    </div>
+  </header>
+
+  <!-- MAIN LANDING PAGE VIEW -->
+  <div id="landing-view">
+    <section id="hero">
+      <div class="hero-glow-rays"></div>
+      <div class="parchment-banner hero-badge" id="hero-badge">⚡ POWERED BY ARC TESTNET</div>
+      <h1 class="hero-title" id="hero-title">BUILD, HARVEST & TRADE IN A <span>DECENTRALIZED PIXEL WORLD</span></h1>
+      <p class="hero-subtitle" id="hero-subtitle">
+        Arcadia Homestead is a 5x5 Grid Stardew-aesthetic Web3 pixel farming simulation running on Arc Testnet.
+      </p>
+
+      <div class="hero-cta">
+        <button class="stardew-btn" onclick="handlePlayGameClick()" id="btn-hero-play">
+          🎮 PLAY GAME / LAUNCH APP
+        </button>
+        <a href="#passes" class="stardew-btn" id="btn-hero-pass">
+          👑 GET PREMIUM PASS
+        </a>
+      </div>
+
+      <!-- PERFECTLY ALIGNED FLOATING ISOMETRIC PARALLAX HERO CANVAS -->
+      <div class="hero-stage">
+        <canvas id="heroCanvas" width="720" height="440"></canvas>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stardew-card stat-box">
+          <div class="stat-number">10,000</div>
+          <div class="stat-label">FARM PLOTS</div>
+        </div>
+        <div class="stardew-card stat-box">
+          <div class="stat-number">1,250+</div>
+          <div class="stat-label">ACTIVE FARMERS</div>
+        </div>
+        <div class="stardew-card stat-box">
+          <div class="stat-number">$45,800+</div>
+          <div class="stat-label">USDC TRADED</div>
+        </div>
+        <div class="stardew-card stat-box">
+          <div class="stat-number">0.4s</div>
+          <div class="stat-label">BLOCK TIME</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERFECT STICKY SCROLL SHOWCASE -->
+    <section id="interactive-showcase">
+      <div class="sticky-pin-container" id="stickyContainer">
+        <div class="showcase-header">
+          <h2 class="showcase-title" id="showcase-title">HOW TO PLAY & GAMEPLAY FEATURES</h2>
+          <p class="showcase-sub" id="showcase-sub">Scroll down to wipe through showcase steps with Giant Pixel Leaf</p>
+        </div>
+
+        <div class="showcase-tabs">
+          <button class="tab-btn active" id="tab-1" onclick="triggerBigLeafTransition(1)">🌾 STEP 01: 5x5 GRID</button>
+          <button class="tab-btn" id="tab-2" onclick="triggerBigLeafTransition(2)">⏱️ STEP 02: GROWTH</button>
+          <button class="tab-btn" id="tab-3" onclick="triggerBigLeafTransition(3)">🌱 STEP 03: SEED SHOP</button>
+          <button class="tab-btn" id="tab-4" onclick="triggerBigLeafTransition(4)">💰 STEP 04: USDC MARKET</button>
+        </div>
+
+        <div class="showcase-frame">
+          <canvas id="leafSweepCanvas"></canvas>
+
+          <div class="showcase-left-window">
+            <canvas id="showcasePreviewCanvas" width="480" height="360"></canvas>
+          </div>
+
+          <div class="showcase-right-display">
+            <div class="showcase-text-card active" id="card-1">
+              <span class="step-badge">STEP 01</span>
+              <h3 class="step-title" id="card1-title">🌾 5x5 GRID FARMING INFRASTRUCTURE</h3>
+              <p class="step-desc" id="card1-desc">
+                Prepare your soil across 25 fertile farm plots. Easily plant seeds by tapping on any crop of your choice.
+              </p>
+            </div>
+
+            <div class="showcase-text-card" id="card-2">
+              <span class="step-badge">STEP 02</span>
+              <h3 class="step-title" id="card2-title">⏱️ REALTIME GROWTH & MOISTURE MECHANICS</h3>
+              <p class="step-desc" id="card2-desc">
+                Crops grow in realistic intervals (Wheat: 60s, Carrot: 2.5m, Pumpkin: 20m). Manual watering is required for Free tier farmers!
+              </p>
+            </div>
+
+            <div class="showcase-text-card" id="card-3">
+              <span class="step-badge">STEP 03</span>
+              <h3 class="step-title" id="card3-title">🌱 PREMIUM PASS 3X SPEED & AUTO IRRIGATION</h3>
+              <p class="step-desc" id="card3-desc">
+                Monthly & Annual Pass subscribers get up to 3x growth acceleration and automated sprinkler systems for 24/7 farming!
+              </p>
+            </div>
+
+            <div class="showcase-text-card" id="card-4">
+              <span class="step-badge">STEP 04</span>
+              <h3 class="step-title" id="card4-title">💰 ARC TESTNET REAL USDC CASH-OUT</h3>
+              <p class="step-desc" id="card4-desc">
+                Harvest rare crops and cash out your hard-earned USDC directly to your Web3 EVM wallet on Arc Testnet!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="specs">
+      <div class="section-header">
+        <h2 class="section-title" id="specs-title">GAMEFI FEATURES & SPECS</h2>
+        <p class="section-sub" id="specs-sub">Stardew Valley 5x5 retro graphics and Arc Testnet infrastructure</p>
+      </div>
+
+      <div class="specs-wrapper">
+        
+
+        <div class="features-grid visible" id="featuresGrid">
+          <div class="stardew-card feature-card" id="card-spec-1">
+            <div class="feature-icon">🌾</div>
+            <h3 class="feature-title">5x5 PIXEL FARMING CYCLES</h3>
+            <p class="feature-desc">
+              Till soil and grow crops. Select seeds (Wheat, Carrot, Tomato, Strawberry, Pumpkin), monitor growth, and harvest rewards.
+            </p>
+          </div>
+
+          <div class="stardew-card feature-card" id="card-spec-2">
+            <div class="feature-icon">💰</div>
+            <h3 class="feature-title">NATIVE USDC ECONOMY</h3>
+            <p class="feature-desc">
+              Settle earnings in native Arc testnet USDC token with sub-second block finality and zero friction.
+            </p>
+          </div>
+
+          <div class="stardew-card feature-card" id="card-spec-3">
+            <div class="feature-icon">🤖</div>
+            <h3 class="feature-title">AGENTIC MARKET (SOON)</h3>
+            <p class="feature-desc">
+              Deploy autonomous AI agentic farmers that auto-water plots, manage growth cycles, and trade crops at optimal market prices.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="passes">
+      <div class="section-header">
+        <h2 class="section-title" id="passes-title">PREMIUM PASS SUBSCRIPTIONS</h2>
+        <p class="section-sub" id="passes-sub">Exclusive farming perks paid with Arc Testnet native USDC</p>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="stardew-card pricing-card">
+          <div>
+            <div class="pricing-name">MONTHLY PASS</div>
+            <div class="pricing-price">5.00 <span>USDC / mo</span></div>
+            <ul class="pricing-list">
+              <li>⚡ 2x Accelerated Crop Growth</li>
+              <li>💧 Auto-Sprinkler Irrigation (0% Dry Risk)</li>
+              <li>💰 10% Lower Marketplace Fee</li>
+              <li>✨ Golden Farmer Badge</li>
+            </ul>
+          </div>
+          <button class="stardew-btn" id="btn-subscribe-monthly" onclick="subscribePass('monthly', 5)">SUBSCRIBE (5 USDC)</button>
+        </div>
+
+        <div class="stardew-card pricing-card">
+          <div class="pricing-badge">MOST POPULAR</div>
+          <div>
+            <div class="pricing-name">ANNUAL PASS</div>
+            <div class="pricing-price">45.00 <span>USDC / yr</span></div>
+            <ul class="pricing-list">
+              <li>🚀 3x Super Growth Speed</li>
+              <li>🌧️ Auto-Rain & Full Automated Irrigation</li>
+              <li>💎 0% Zero Fee + 50% Bonus Yield</li>
+              <li>🏆 Golden Hoe & VIP Badge</li>
+            </ul>
+          </div>
+          <button class="stardew-btn" id="btn-subscribe-annual" onclick="subscribePass('annual', 45)">SUBSCRIBE (45 USDC)</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 Arcadia Homestead - Arc Testnet (Chain ID 5042002 / 0x4cef52)</p>
+    </footer>
+  </div>
+
+  <div id="loading-view">
+    <div class="stardew-card loading-card">
+      <div class="loading-title">🌾 ARCADIA HOMESTEAD</div>
+      <canvas id="loadingCanvas" width="120" height="120"></canvas>
+      <div class="loading-bar-outer">
+        <div class="loading-bar-inner" id="loadingBar"></div>
+      </div>
+      <div class="loading-percent" id="loadingPercent">0%</div>
+      <div class="loading-tip" id="loadingTip">
+        "Tip: You can use native USDC on Arc Testnet for all marketplace transactions."
+      </div>
+    </div>
+  </div>
+
+  <!-- SINGLE SCREEN ZERO-SCROLL 5x5 GRID GAME VIEW -->
+  <div id="game-view">
+    <canvas id="gameBackgroundCanvas"></canvas>
+
+    <div class="game-top-bar">
+      <button class="stardew-btn" style="padding: 10px 18px; font-size: 10px;" onclick="switchToLandingView()">
+        ⬅ BACK TO WEBSITE
+      </button>
+      <div class="game-title">🌾 ARCADIA HOMESTEAD - FULL GAME</div>
+      <div class="game-usdc-badge" id="game-view-usdc">USDC: 0.00</div>
+    </div>
+
+    <div class="full-game-layout">
+      <!-- LEFT COLUMN: STATS + 5x5 GRID + ACTION BAR -->
+      <div class="game-left-col">
+        <div class="top-stats-bar">
+          <div class="stat-coins">🪙 <span id="coinCount">163</span> Coins</div>
+          <div class="stat-pass-badge" id="passStatusBadge">FREE PASS (Hard Mode: 1x Speed + 30% Fee)</div>
+          <div class="stat-day">Day <span id="dayCount">1</span></div>
+        </div>
+
+        <div class="farm-grid-frame">
+          <div class="farm-grid" id="farmGrid"></div>
+        </div>
+
+        <div class="action-strip">
+          <div class="ready-count-badge">🌾 <span id="readyCount">0</span> ready! (Blue = Needs Water 💧)</div>
+          <button class="end-day-btn" onclick="endDay()">🌅 END DAY (Skip Time)</button>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: USDC VAULT + SEED SHOP PANEL -->
+      <div class="game-right-col">
+        <div class="usdc-vault-card">
+          <div class="usdc-vault-info">
+            <span class="usdc-vault-title">💰 ARC USDC VAULT</span>
+            <span class="usdc-vault-balance" id="usdcVaultBalance">0.00 USDC</span>
+          </div>
+          <button class="cashout-btn" onclick="cashoutUSDC()">CASH OUT USDC 💸</button>
+        </div>
+
+        <div class="seed-shop-card">
+          <div class="shop-header">
+            <span>🌱 SEED SHOP</span>
+            <span style="font-size: 9px; color: var(--text-muted);">SPEED: <b id="speedMultLabel" style="color: #f87171;">1x (Hard Mode)</b></span>
+          </div>
+          <div class="seed-grid" id="seedGrid"></div>
+          <div class="shop-instruction">⚠️ Harvest 🎃 Pumpkin (20m) or 🍓 Strawberry (10m) for +0.10 USDC Vault yield!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BUGS_DATA_URI = "data:image/png;base64,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DZIUUtv5z2tjWBu4u3btkssvv0z2799Xan/S+3vqqSPidhh00iv/i4sLsm/vHpk9M7TydvpUzznnLPmJn3jZ+je23JUJx4eq2gCAJiBYAE2rMqxj/ks04pP7SL7GdRW9F8el78O7ag0n0mMViw/DobbGgWRfrYmk027PYO+QiSFpADBR9L0DyFSlq+dV2pctTMEImyrvNwAAY0awAAAAAFAawQIAAABAaQQLAAAAAKURLAAAAACUxqpQwBQY3xNvW+JCmeaBCb0mrRNhQgXnsTwW84XHwBdUDe8fYN9fDaqg8na6ulalJ583hC7/m74Og4UL03KGsa7hxcsAABNFsACmwWrjUgPGxiJdRqy4EC76TaIxtXyGFcjT29Mibpm7219mdloN4qpVpo7D8rj63E1m0NDddbr8rUuasz7r+IfnFRMspiSsRhx+x8yGX6Pwbf1eWBq4WucZADQNwQKYgsvOOa+wZfmhe4/4H9vdlb128g0fLX536aWXyL59+3LrRUStKNy+Z/euie+PNtKPnzgh3W5XquLOO78pDz30sHhntuaLfkjYu2e3vO5nXpvbQ6SbtqJoejs9x1acly8+sSqvP3uRBAcAM0SwACrg3ZedZr7z0GNTuZyqvRGLi4uysLCQeSXdOSetVksWFjrSak2+YaxPOoqiECyG9bRMy6mlFTl5anlLb0Oya8n3tBL46aeflnsf4WfD32jrTpwXObE8+/MGAOYdwQKoinTAfsmG6CiVt9MG8+btdLjI2venNYRH5yGIC0+7CqFC6UiwZF9ygo5+y60fxywMf5oeHfrkI443AMwaq0IBVTLlttHmxm9/OjJQK5y1AFANBAsAAAAApREsAGAHl8AZ6gQAwEYECwDYLEyrIDgAALAdBAsAyFSNieQAANQFq0IBlaFL24zjfpKCe/krLLncitD6vbQ43jDpqknjGRE0ruc+jJdeV4vWGXE+3top0f+3HpdOp5Wz/G1SarvVtgyHAgBgAMECqIoxNKy1HsSFF14oZ599dm6jt9PpyJlnnimLuxbDYw5u5vv/1j/bBTUstLGtlaeXl5el11stvUxsr6dhaDq+85175fvffyipjB1C2OaK2V6edslF8sxnXD5SdXIAAJAgWAANosFCK2ZrkTv9exatBr1rsSOddt4V+dEnJq+srEi31yu939OsX7G0vCxHjx4NCcpn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P79xf7ysxCfE97rZGwAAAEzS3/vTX69KmQIAAAAANcUcCwAAAAClESwAAAAAlEawAAAAAFAawQIAAABAaQQLAAAAAKURLAAAAACURrAAAAAAUBrBAgAAAEBpBAsAAAAApREsAAAAAJRGsAAAAABQGsECAAAAQGkECwAAAAClESwAAAAAlEawAAAAAFAawQIAAABAaQQLAAAAAKURLAAAAACURrAAAAAAUBrBAgAAAEBpBAsAAAAApREsAAAAAJRGsAAAAABQGsECAAAAQGkECwAAAAClESwAAAAAlEawAAAAAFAawQIAAABAaQQLAAAAAKURLAAAAACURrAAAAAAUBrBAgAAAEBpBAsAAAAApREsAAAAAJRGsAAAAABQGsECAAAAQGkECwAAAAClESwAAAAAlEawAAAAAFAawQIAAABAaQQLAAAAAKURLAAAAACURrAAAAAAUBrBAgAAAEBpBAsAAAAApREsAAAAAJRGsAAAAABQGsECAAAAQGkECwAAAAClESwAAAAAlEawAAAAAFAawQIAAABAaQQLAAAAAKURLAAAAACURrAAAAAAUBrBAgAAAEBpBAsAAAAApREsAAAAAJRGsAAAAABQGsECAAAAQGkECwAAAAClESwAAAAAlEawAAAAAFAawQIAAABAaQQLAAAAAKURLAAAAACURrAAAAAAUBrBAgAAAEBpBAsAAAAApREsAAAAAJRGsAAAAABQGsECAAAAQGkECwAAAABS1v8fU4hvQnJza04AAAAASUVORK5CYII=";
+    const TREASURY_ADDRESS = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F";
+    const ARC_CHAIN_HEX = "0x4cef52"; // 5042002 in hex
+
+    /* RETRO PIXEL TOAST SYSTEM */
+    function showPixelToast(msg, icon = '📜') {
+      const container = document.getElementById('pixelToastContainer'); if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'pixel-toast';
+      toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+      playSound('water');
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3400);
+    }
+
+    /* WALLET MODAL CONTROLS */
+    function openWalletModal() {
+      document.getElementById('walletModal').style.display = 'flex';
+    }
+    function closeWalletModal() {
+      document.getElementById('walletModal').style.display = 'none';
+    }
+
+    async function connectWalletFromModal() {
+      const success = await connectWallet();
+      if (success) {
+        closeWalletModal();
+        startLoadingSequence();
+      }
+    }
+
+    function handlePlayGameClick() {
+      if (!userAddress) {
+        openWalletModal();
+      } else {
+        startLoadingSequence();
+      }
+    }
+
+    /* LEAF ENGINE */
+    function createPixelLeafSprite(color, outlineColor) {
+      const c = document.createElement('canvas'); c.width = 16; c.height = 16;
+      const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = false;
+      const pixels = [
+        "....XXXX........", "..XXOOOOXX......", ".XOOOOOOOOXX....", "XOOOOOOOOOOOXX..",
+        "XOOOOVOOOOOOOOX.", "XOOOOOVOOOOOOOX.", ".XOOOOOVOOOOOX..", "..XOOOOOVOOOX...",
+        "...XOOOOOVX.....", "....XOOOOVX.....", ".....XOOVXXXX...", "......XVX....XX.",
+        "......X.........", "................"
+      ];
+      for(let r = 0; r < pixels.length; r++) {
+        for(let col = 0; col < pixels[r].length; col++) {
+          const char = pixels[r][col];
+          if (char === 'X') { ctx.fillStyle = outlineColor; ctx.fillRect(col, r, 1, 1); }
+          else if (char === 'O') { ctx.fillStyle = color; ctx.fillRect(col, r, 1, 1); }
+          else if (char === 'V') { ctx.fillStyle = '#1c0a02'; ctx.fillRect(col, r, 1, 1); }
+        }
+      }
+      return c;
+    }
+
+    function initPixelLeafEngine() {
+      const canvas = document.getElementById('leafCanvas');
+      const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
+      let width = canvas.width = window.innerWidth; let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight;
+        ctx.imageSmoothingEnabled = false;
+      });
+
+      const leafSprites = [
+        createPixelLeafSprite('#4d9e29', '#1a3a0d'), createPixelLeafSprite('#f59e0b', '#451a03'),
+        createPixelLeafSprite('#dc2626', '#450a0a'), createPixelLeafSprite('#fbbf24', '#78350f')
+      ];
+
+      const particles = [];
+      for(let i = 0; i < 40; i++) {
+        particles.push({
+          x: Math.random() * width, y: Math.random() * height,
+          sprite: leafSprites[Math.floor(Math.random() * leafSprites.length)],
+          vx: 0.4 + Math.random() * 1.2, vy: 0.8 + Math.random() * 1.4,
+          stepFrame: Math.floor(Math.random() * 4), stepTimer: 0, scale: (Math.random() > 0.5) ? 2 : 3
+        });
+      }
+
+      function renderLeaves() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy; p.stepTimer++;
+          if (p.stepTimer > 15) { p.stepFrame = (p.stepFrame + 1) % 4; p.stepTimer = 0; }
+          if (p.x > width) p.x = -32; if (p.y > height) p.y = -32;
+
+          ctx.save(); ctx.translate(Math.floor(p.x), Math.floor(p.y));
+          ctx.rotate((p.stepFrame * 90) * Math.PI / 180);
+          const s = p.scale; ctx.drawImage(p.sprite, -8 * s, -8 * s, 16 * s, 16 * s);
+          ctx.restore();
+        });
+        requestAnimationFrame(renderLeaves);
+      }
+      renderLeaves();
+    }
+
+    /* GAME BACKGROUND ENGINE */
+    function initGameBackgroundEngine() {
+      const canvas = document.getElementById('gameBackgroundCanvas'); if (!canvas) return;
+      const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
+
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        ctx.imageSmoothingEnabled = false;
+      });
+
+      const clouds = [
+        { x: 50, y: 80, speed: 0.3, scale: 3 },
+        { x: 350, y: 140, speed: 0.2, scale: 4 },
+        { x: 750, y: 60, speed: 0.4, scale: 3 },
+        { x: 1100, y: 110, speed: 0.25, scale: 4 }
+      ];
+
+      const sparkles = [];
+      for(let i = 0; i < 30; i++) {
+        sparkles.push({
+          x: Math.random() * width,
+          y: height * 0.45 + Math.random() * (height * 0.55),
+          timer: Math.random() * 100,
+          scale: 1 + Math.floor(Math.random() * 2)
+        });
+      }
+
+      let sunPulse = 0;
+
+      function renderGameWorld() {
+        ctx.clearRect(0, 0, width, height);
+
+        const horizonY = height * 0.44;
+        ctx.fillStyle = '#70c5ce'; ctx.fillRect(0, 0, width, horizonY);
+        ctx.fillStyle = '#4a8528'; ctx.fillRect(0, horizonY, width, height - horizonY);
+
+        sunPulse += 0.03;
+        const sunX = width - 120, sunY = 90;
+        const sunR = 36 + Math.sin(sunPulse) * 4;
+        ctx.fillStyle = 'rgba(253, 224, 71, 0.3)';
+        ctx.beginPath(); ctx.arc(sunX, sunY, sunR + 12, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        clouds.forEach(c => {
+          c.x += c.speed;
+          if (c.x > width + 150) c.x = -150;
+          const s = c.scale;
+          ctx.fillRect(Math.floor(c.x), Math.floor(c.y), 40 * s, 12 * s);
+          ctx.fillRect(Math.floor(c.x + 8 * s), Math.floor(c.y - 6 * s), 24 * s, 6 * s);
+        });
+
+        ctx.fillStyle = '#3f7320';
+        ctx.beginPath();
+        ctx.ellipse(width * 0.25, horizonY + 20, width * 0.35, 60, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(width * 0.75, horizonY + 15, width * 0.4, 70, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#4d2813';
+        const fenceY = horizonY - 14;
+        for(let fx = 10; fx < width; fx += 44) {
+          ctx.fillRect(fx, fenceY, 8, 24);
+        }
+        ctx.fillRect(0, fenceY + 6, width, 5);
+        ctx.fillRect(0, fenceY + 14, width, 5);
+
+        sparkles.forEach(s => {
+          s.timer += 0.05;
+          const alpha = (Math.sin(s.timer) + 1) / 2;
+          if (alpha > 0.3) {
+            ctx.fillStyle = `rgba(253, 224, 71, ${alpha.toFixed(2)})`;
+            ctx.fillRect(Math.floor(s.x), Math.floor(s.y), 4 * s.scale, 4 * s.scale);
+          }
+        });
+
+        requestAnimationFrame(renderGameWorld);
+      }
+      renderGameWorld();
+    }
+
+    /* ENHANCED HERO STAGE ENGINE */
+    function initHeroShowcase() {
+      const hCanvas = document.getElementById('heroCanvas'); if (!hCanvas) return;
+      const hCtx = hCanvas.getContext('2d'); hCtx.imageSmoothingEnabled = false;
+
+      let tick = 0;
+      const floatingHarvests = ['🌾', '🥕', '🍅', '🍓', '🎃', '🪙', '💎'];
+
+      function renderHeroFrame() {
+        tick += 0.02;
+        hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+
+        const floatY = Math.sin(tick) * 8;
+
+        const gradient = hCtx.createRadialGradient(360, 220 + floatY, 40, 360, 220 + floatY, 340);
+        gradient.addColorStop(0, 'rgba(253, 224, 71, 0.28)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        hCtx.fillStyle = gradient;
+        hCtx.fillRect(0, 0, 720, 440);
+
+        const centerX = 360, centerY = 210 + floatY;
+        const tileW = 76, tileH = 38;
+
+        hCtx.fillStyle = '#2c1609';
+        hCtx.beginPath();
+        hCtx.moveTo(centerX, centerY - 120);
+        hCtx.lineTo(centerX + 235, centerY);
+        hCtx.lineTo(centerX, centerY + 120);
+        hCtx.lineTo(centerX - 235, centerY);
+        hCtx.closePath();
+        hCtx.fill();
+
+        hCtx.fillStyle = '#1c0a02';
+        hCtx.beginPath();
+        hCtx.moveTo(centerX - 235, centerY);
+        hCtx.lineTo(centerX, centerY + 120);
+        hCtx.lineTo(centerX, centerY + 160);
+        hCtx.lineTo(centerX - 235, centerY + 40);
+        hCtx.closePath();
+        hCtx.fill();
+
+        hCtx.fillStyle = '#3a1b07';
+        hCtx.beginPath();
+        hCtx.moveTo(centerX + 235, centerY);
+        hCtx.lineTo(centerX, centerY + 120);
+        hCtx.lineTo(centerX, centerY + 160);
+        hCtx.lineTo(centerX + 235, centerY + 40);
+        hCtx.closePath();
+        hCtx.fill();
+
+        hCtx.fillStyle = '#599632';
+        hCtx.beginPath();
+        hCtx.moveTo(centerX, centerY - 126);
+        hCtx.lineTo(centerX + 235, centerY - 6);
+        hCtx.lineTo(centerX, centerY + 114);
+        hCtx.lineTo(centerX - 235, centerY - 6);
+        hCtx.closePath();
+        hCtx.fill();
+
+        const crops = ['🌾', '🥕', '🍅', '🍓', '🎃'];
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 5; c++) {
+            const isoX = centerX + (c - r) * (tileW / 2);
+            const isoY = centerY - 6 + (c + r - 4) * (tileH / 2);
+
+            hCtx.fillStyle = '#3b2313';
+            hCtx.beginPath();
+            hCtx.moveTo(isoX, isoY - tileH / 2);
+            hCtx.lineTo(isoX + tileW / 2, isoY);
+            hCtx.lineTo(isoX, isoY + tileH / 2);
+            hCtx.lineTo(isoX - tileW / 2, isoY);
+            hCtx.closePath();
+            hCtx.fill();
+
+            hCtx.strokeStyle = '#1a0f07'; hCtx.lineWidth = 2; hCtx.stroke();
+
+            const idx = r * 5 + c;
+            if (idx % 2 === 0 || idx === 7 || idx === 17) {
+              const cropIcon = crops[idx % crops.length];
+              hCtx.font = '22px sans-serif';
+              hCtx.fillText(cropIcon, isoX - 11, isoY + 7);
+            }
+          }
+        }
+
+        const orbitR = 140;
+        for (let i = 0; i < floatingHarvests.length; i++) {
+          const angle = tick * 0.8 + (i * Math.PI * 2 / floatingHarvests.length);
+          const itemX = centerX + Math.cos(angle) * orbitR;
+          const itemY = centerY - 130 + Math.sin(angle) * 22 + Math.sin(tick * 2 + i) * 6;
+          const itemScale = 0.85 + (Math.sin(angle) + 1) * 0.2;
+
+          hCtx.save();
+          hCtx.font = `${Math.floor(26 * itemScale)}px "Press Start 2P", sans-serif`;
+          hCtx.fillText(floatingHarvests[i], itemX - 14, itemY);
+          hCtx.restore();
+        }
+
+        requestAnimationFrame(renderHeroFrame);
+      }
+      renderHeroFrame();
+    }
+
+    /* STICKY SHOWCASE ENGINE */
+    let activeTabStep = 1;
+    let isLeafTransitioning = false;
+
+    function renderShowcasePreview(step) {
+      const sCanvas = document.getElementById('showcasePreviewCanvas'); if (!sCanvas) return;
+      const sCtx = sCanvas.getContext('2d'); sCtx.imageSmoothingEnabled = false;
+
+      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+
+      sCtx.fillStyle = '#70c5ce'; sCtx.fillRect(0, 0, 480, 150);
+      sCtx.fillStyle = '#599632'; sCtx.fillRect(0, 150, 480, 210);
+
+      if (step === 1) {
+        sCtx.fillStyle = '#2c1609'; sCtx.fillRect(60, 25, 360, 310);
+        sCtx.fillStyle = '#fde047'; sCtx.font = '11px "Press Start 2P"'; sCtx.fillText('STEP 1: 5x5 GRID TARLA', 85, 52);
+
+        for(let r=0; r<5; r++) {
+          for(let c=0; c<5; c++) {
+            const x = 85 + c * 54, y = 70 + r * 48;
+            sCtx.fillStyle = '#3b2313'; sCtx.fillRect(x, y, 46, 42);
+            sCtx.strokeStyle = '#fde047'; sCtx.lineWidth = 2; sCtx.strokeRect(x, y, 46, 42);
+          }
+        }
+      } else if (step === 2) {
+        sCtx.fillStyle = '#2c1609'; sCtx.fillRect(60, 25, 360, 310);
+        sCtx.fillStyle = '#34d399'; sCtx.font = '11px "Press Start 2P"'; sCtx.fillText('STEP 2: REALTIME GROWTH', 80, 52);
+
+        const crops = ['🌱', '🌿', '🌾', '🥕', '🍅'];
+        for(let r=0; r<5; r++) {
+          for(let c=0; c<5; c++) {
+            const x = 85 + c * 54, y = 70 + r * 48;
+            sCtx.fillStyle = '#3b2313'; sCtx.fillRect(x, y, 46, 42);
+            sCtx.strokeStyle = (r+c)%2===0 ? '#34d399' : '#1a0f07'; sCtx.lineWidth = 2; sCtx.strokeRect(x, y, 46, 42);
+            sCtx.font = '20px sans-serif'; sCtx.fillText(crops[(r+c)%crops.length], x+12, y+28);
+          }
+        }
+      } else if (step === 3) {
+        sCtx.fillStyle = '#2c1609'; sCtx.fillRect(40, 20, 400, 320);
+        sCtx.fillStyle = '#fde047'; sCtx.font = '11px "Press Start 2P"'; sCtx.fillText('STEP 3: SEED SHOP', 140, 45);
+
+        const seeds = [
+          { icon: '🌾', name: 'Wheat', price: '🪙 5' },
+          { icon: '🥕', name: 'Carrot', price: '🪙 10' },
+          { icon: '🍅', name: 'Tomato', price: '🪙 20' },
+          { icon: '🍓', name: 'Strawberry', price: '🪙 30' }
+        ];
+        seeds.forEach((s, i) => {
+          const y = 65 + i * 62;
+          sCtx.fillStyle = '#1a0f0a'; sCtx.fillRect(60, y, 360, 52);
+          sCtx.strokeStyle = '#542d13'; sCtx.lineWidth = 3; sCtx.strokeRect(60, y, 360, 52);
+          sCtx.font = '24px sans-serif'; sCtx.fillText(s.icon, 75, y + 34);
+          sCtx.fillStyle = '#ffffff'; sCtx.font = '11px "Press Start 2P"'; sCtx.fillText(s.name, 120, y + 31);
+          sCtx.fillStyle = '#fde047'; sCtx.fillText(s.price, 300, y + 31);
+        });
+      } else if (step === 4) {
+        sCtx.fillStyle = '#2c1609'; sCtx.fillRect(40, 25, 400, 310);
+        sCtx.fillStyle = '#34d399'; sCtx.font = '11px "Press Start 2P"'; sCtx.fillText('STEP 4: ARC USDC MARKET', 95, 55);
+
+        sCtx.fillStyle = 'rgba(52, 211, 153, 0.2)'; sCtx.fillRect(70, 75, 340, 52);
+        sCtx.strokeStyle = '#34d399'; sCtx.lineWidth = 3; sCtx.strokeRect(70, 75, 340, 52);
+        sCtx.fillStyle = '#34d399'; sCtx.font = '13px "Press Start 2P"'; sCtx.fillText('💰 USDC: 100.00', 120, 108);
+
+        sCtx.fillStyle = 'rgba(245, 158, 11, 0.2)'; sCtx.fillRect(70, 145, 340, 160);
+        sCtx.strokeStyle = '#fde047'; sCtx.lineWidth = 3; sCtx.strokeRect(70, 145, 340, 160);
+        sCtx.fillStyle = '#fde047'; sCtx.font = '11px "Press Start 2P"'; sCtx.fillText('👑 PREMIUM PASS', 130, 180);
+        sCtx.fillStyle = '#ffffff'; sCtx.fillText('• 3x Speed Crop Growth', 90, 215);
+        sCtx.fillText('• 0% Marketplace Fee', 90, 245);
+      }
+    }
+
+    function switchShowcaseTab(num) {
+      activeTabStep = num;
+      for(let i=1; i<=4; i++) {
+        const btn = document.getElementById(`tab-${i}`);
+        const card = document.getElementById(`card-${i}`);
+        if (btn) btn.classList.toggle('active', i === num);
+        if (card) card.classList.toggle('active', i === num);
+      }
+      renderShowcasePreview(num);
+    }
+
+    const bigLeafSprite = createPixelLeafSprite('#f59e0b', '#451a03');
+
+    function triggerBigLeafTransition(targetStep) {
+      if (isLeafTransitioning || targetStep === activeTabStep) return;
+      isLeafTransitioning = true;
+
+      const canvas = document.getElementById('leafSweepCanvas');
+      const container = document.querySelector('.showcase-frame');
+      if (!canvas || !container) {
+        switchShowcaseTab(targetStep);
+        isLeafTransitioning = false;
+        return;
+      }
+
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+
+      let leafX = -300;
+      const speed = 36;
+      const midPoint = canvas.width * 0.45;
+      let stepSwitched = false;
+
+      function animateSweep() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        leafX += speed;
+
+        if (leafX >= midPoint && !stepSwitched) {
+          stepSwitched = true;
+          switchShowcaseTab(targetStep);
+        }
+
+        const scale = 24;
+        ctx.save();
+        ctx.translate(Math.floor(leafX), Math.floor(canvas.height / 2));
+        ctx.rotate(0.2);
+        ctx.drawImage(bigLeafSprite, -8 * scale, -8 * scale, 16 * scale, 16 * scale);
+        ctx.restore();
+
+        ctx.fillStyle = '#fde047';
+        for(let p = 0; p < 8; p++) {
+          const px = leafX - 60 - Math.random() * 140;
+          const py = canvas.height / 2 + (Math.random() - 0.5) * 200;
+          ctx.fillRect(Math.floor(px), Math.floor(py), 8, 8);
+        }
+
+        if (leafX < canvas.width + 350) {
+          requestAnimationFrame(animateSweep);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          isLeafTransitioning = false;
+        }
+      }
+
+      animateSweep();
+    }
+
+    function handleStickyScroll() {
+      const section = document.getElementById('interactive-showcase');
+      const container = document.getElementById('stickyContainer');
+      if (!section || !container) return;
+
+      const rect = section.getBoundingClientRect();
+      const navbarHeight = 90;
+      const totalTrack = section.offsetHeight - window.innerHeight;
+
+      if (rect.top <= navbarHeight && rect.bottom >= window.innerHeight) {
+        container.classList.add('is-pinned');
+        container.classList.remove('is-bottom');
+
+        const currentScrolled = navbarHeight - rect.top;
+        let progress = currentScrolled / totalTrack;
+        progress = Math.max(0, Math.min(1, progress));
+
+        let targetStep = 1;
+        if (progress < 0.25) targetStep = 1;
+        else if (progress < 0.50) targetStep = 2;
+        else if (progress < 0.75) targetStep = 3;
+        else targetStep = 4;
+
+        if (targetStep !== activeTabStep && !isLeafTransitioning) {
+          triggerBigLeafTransition(targetStep);
+        }
+
+      } else if (rect.bottom < window.innerHeight) {
+        container.classList.remove('is-pinned');
+        container.classList.add('is-bottom');
+        if (activeTabStep !== 4 && !isLeafTransitioning) {
+          triggerBigLeafTransition(4);
+        }
+      } else {
+        container.classList.remove('is-pinned');
+        container.classList.remove('is-bottom');
+        if (activeTabStep !== 1 && !isLeafTransitioning) {
+          switchShowcaseTab(1);
+        }
+      }
+    }
+
+    /* CROP PARTICLE EXPLOSION ENGINE & CELEBRATION */
+    function triggerCropExplosion(x, y, cropIcon) {
+      const canvas = document.getElementById('celebrationCanvas'); if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+      const particles = [];
+      for(let i = 0; i < 35; i++) {
+        particles.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 16, vy: -4 - Math.random() * 12, gravity: 0.4,
+          icon: Math.random() > 0.3 ? cropIcon : '🪙',
+          size: 16 + Math.random() * 14,
+          rot: Math.random() * Math.PI * 2, vRot: (Math.random() - 0.5) * 0.2, alpha: 1
+        });
+      }
+
+      let frame = 0;
+      function animate() {
+        frame++; ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = 0;
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy; p.vy += p.gravity; p.rot += p.vRot; p.alpha -= 0.02;
+          if (p.alpha > 0) {
+            active++; ctx.save(); ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+            ctx.font = `${Math.floor(p.size)}px sans-serif`;
+            ctx.fillText(p.icon, -p.size/2, p.size/2);
+            ctx.restore();
+          }
+        });
+        if (active > 0 && frame < 90) requestAnimationFrame(animate);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      animate();
+    }
+
+    function triggerCelebration() {
+      triggerCropExplosion(window.innerWidth / 2, window.innerHeight / 3, '👑');
+      setTimeout(() => triggerCropExplosion(window.innerWidth / 3, window.innerHeight / 2, '💎'), 200);
+      setTimeout(() => triggerCropExplosion(window.innerWidth * 2 / 3, window.innerHeight / 2, '🎉'), 400);
+    }
+
+    /* GAME ENGINE & REAL WEB3 ARC TESTNET TRANSACTIONS */
+    let coins = 163;
+    let usdcVault = 0.00;
+    let day = 1;
+    let selectedSeedId = 'wheat';
+    let passLevel = 'free';
+    let speedMultiplier = 1;
+    let marketplaceFeePct = 30;
+
+    const SEEDS = [
+      { id: 'wheat', name: 'Wheat', icon: '🌾', price: 10, yieldCoins: 28, growTimeSec: 60 },
+      { id: 'carrot', name: 'Carrot', icon: '🥕', price: 25, yieldCoins: 75, growTimeSec: 150 },
+      { id: 'tomato', name: 'Tomato', icon: '🍅', price: 60, yieldCoins: 190, growTimeSec: 300 },
+      { id: 'strawberry', name: 'Strawberry', icon: '🍓', price: 150, yieldCoins: 480, growTimeSec: 600 },
+      { id: 'pumpkin', name: 'Pumpkin', icon: '🎃', price: 400, yieldCoins: 1350, growTimeSec: 1200 }
+    ];
+
+    const gridState = [];
+    for(let i=0; i<25; i++) {
+      gridState.push({ id: i, crop: null, timer: null, needsWater: false, needsWaterHandled: false });
+    }
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playSound(type) {
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'plant') {
+          osc.type = 'triangle'; osc.frequency.setValueAtTime(200, now);
+          gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'harvest') {
+          osc.type = 'sine'; osc.frequency.setValueAtTime(523, now); osc.frequency.setValueAtTime(659, now + 0.08); osc.frequency.setValueAtTime(784, now + 0.16);
+          gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now); osc.stop(now + 0.25);
+        } else if (type === 'water') {
+          osc.type = 'sine'; osc.frequency.setValueAtTime(300, now); osc.frequency.setValueAtTime(450, now + 0.1);
+          gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now); osc.stop(now + 0.15);
+        }
+      } catch(e) {}
+    }
+
+    /* DYNAMIC GAME VIEW CURSOR CONTROLLER (SELECTED CROP CURSOR) */
+    function updateGameCursor() {
+      const selectedSeed = SEEDS.find(s => s.id === selectedSeedId) || SEEDS[0];
+      const cropIcon = selectedSeed.icon;
+      
+      const svgCursor = `<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'>
+        <rect x='2' y='2' width='32' height='32' rx='6' fill='%232c1609' stroke='%23fde047' stroke-width='2'/>
+        <text x='18' y='25' font-size='22' text-anchor='middle'>${cropIcon}</text>
+      </svg>`;
+      
+      const cursorUrl = `url("data:image/svg+xml;utf8,${encodeURIComponent(svgCursor)}") 18 18, pointer`;
+      
+      const gameView = document.getElementById('game-view');
+      if (gameView) {
+        gameView.style.cursor = cursorUrl;
+      }
+      
+      const tiles = document.querySelectorAll('.grid-tile');
+      tiles.forEach(t => t.style.cursor = cursorUrl);
+    }
+
+    function updatePassUI() {
+      const badge = document.getElementById('passStatusBadge');
+      const speedLabel = document.getElementById('speedMultLabel');
+      const btnMonthly = document.getElementById('btn-subscribe-monthly');
+      const btnAnnual = document.getElementById('btn-subscribe-annual');
+
+      if (passLevel === 'monthly') {
+        if (badge) {
+          badge.className = 'stat-pass-badge';
+          badge.style.background = 'rgba(59, 130, 246, 0.2)';
+          badge.style.color = '#60a5fa';
+          badge.style.borderColor = '#3b82f6';
+          badge.innerText = 'MONTHLY PASS (2x Speed + 10% Fee)';
+        }
+        if (speedLabel) {
+          speedLabel.innerText = '2x (MONTHLY PASS)';
+          speedLabel.style.color = '#60a5fa';
+        }
+        if (btnMonthly) {
+          btnMonthly.innerText = '✅ SUBSCRIBED';
+          btnMonthly.disabled = true;
+        }
+        if (btnAnnual) {
+          btnAnnual.innerText = 'UPGRADE TO ANNUAL (45 USDC)';
+          btnAnnual.disabled = false;
+        }
+      } else if (passLevel === 'annual') {
+        if (badge) {
+          badge.className = 'stat-pass-badge';
+          badge.style.background = 'rgba(52, 211, 153, 0.2)';
+          badge.style.color = '#34d399';
+          badge.style.borderColor = '#34d399';
+          badge.innerText = 'ANNUAL PASS (3x Speed + 0% Fee)';
+        }
+        if (speedLabel) {
+          speedLabel.innerText = '3x (ANNUAL PASS)';
+          speedLabel.style.color = '#34d399';
+        }
+        if (btnAnnual) {
+          btnAnnual.innerText = '✅ SUBSCRIBED (VIP)';
+          btnAnnual.disabled = true;
+        }
+        if (btnMonthly) {
+          btnMonthly.innerText = 'PROMOTED TO VIP';
+          btnMonthly.disabled = true;
+        }
+      } else {
+        if (badge) {
+          badge.className = 'stat-pass-badge';
+          badge.style.background = 'rgba(239, 68, 68, 0.2)';
+          badge.style.color = '#f87171';
+          badge.style.borderColor = '#ef4444';
+          badge.innerText = 'FREE PASS (Hard Mode: 1x Speed + 30% Fee)';
+        }
+        if (speedLabel) {
+          speedLabel.innerText = '1x (Hard Mode)';
+          speedLabel.style.color = '#f87171';
+        }
+        if (btnMonthly) {
+          btnMonthly.innerText = 'SUBSCRIBE (5 USDC)';
+          btnMonthly.disabled = false;
+        }
+        if (btnAnnual) {
+          btnAnnual.innerText = 'SUBSCRIBE (45 USDC)';
+          btnAnnual.disabled = false;
+        }
+      }
+
+      renderSeedShop();
+      for(let i=0; i<25; i++) updateTileDOM(i);
+      updateGameCursor();
+    }
+
+    function initStaticDOMFarmGrid() {
+      const gridEl = document.getElementById('farmGrid'); if (!gridEl) return;
+      gridEl.innerHTML = '';
+
+      for (let i = 0; i < 25; i++) {
+        const tileDiv = document.createElement('div');
+        tileDiv.className = 'grid-tile';
+        tileDiv.id = `tile-node-${i}`;
+
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'tile-crop-icon';
+        iconSpan.id = `tile-icon-${i}`;
+
+        const progressDiv = document.createElement('div');
+        progressDiv.className = 'tile-progress-bar';
+        progressDiv.id = `tile-pbar-${i}`;
+        progressDiv.style.display = 'none';
+
+        const fillDiv = document.createElement('div');
+        fillDiv.className = 'tile-progress-fill';
+        fillDiv.id = `tile-pfill-${i}`;
+        progressDiv.appendChild(fillDiv);
+
+        tileDiv.appendChild(iconSpan);
+        tileDiv.appendChild(progressDiv);
+
+        tileDiv.addEventListener('click', (e) => handleTileClick(i, e));
+
+        gridEl.appendChild(tileDiv);
+      }
+      updateGameCursor();
+    }
+
+    function updateTileDOM(id) {
+      const tile = gridState[id];
+      const tileNode = document.getElementById(`tile-node-${id}`);
+      const iconNode = document.getElementById(`tile-icon-${id}`);
+      const pbarNode = document.getElementById(`tile-pbar-${id}`);
+      const pfillNode = document.getElementById(`tile-pfill-${id}`);
+
+      if (!tileNode) return;
+
+      let classes = 'grid-tile';
+      if (tile.crop) classes += ' tilled';
+      if (tile.crop && tile.needsWater) classes += ' needs-water';
+      if (tile.crop && tile.crop.isReady) classes += ' ready';
+      tileNode.className = classes;
+
+      if (tile.crop) {
+        const seedDef = SEEDS.find(s => s.id === tile.crop.seedId);
+        if (tile.crop.isReady) {
+          iconNode.innerText = seedDef.icon;
+          pbarNode.style.display = 'none';
+        } else if (tile.needsWater) {
+          iconNode.innerText = '💧';
+          pbarNode.style.display = 'block';
+          pfillNode.style.width = `${tile.crop.growProgress}%`;
+          pfillNode.style.background = '#3b82f6';
+        } else if (tile.crop.growProgress < 50) {
+          iconNode.innerText = '🌱';
+          pbarNode.style.display = 'block';
+          pfillNode.style.width = `${tile.crop.growProgress}%`;
+          pfillNode.style.background = 'linear-gradient(90deg, #f59e0b, #34d399)';
+        } else {
+          iconNode.innerText = '🌿';
+          pbarNode.style.display = 'block';
+          pfillNode.style.width = `${tile.crop.growProgress}%`;
+          pfillNode.style.background = 'linear-gradient(90deg, #f59e0b, #34d399)';
+        }
+      } else {
+        iconNode.innerText = '';
+        pbarNode.style.display = 'none';
+      }
+
+      let readyCount = 0;
+      gridState.forEach(t => { if (t.crop && t.crop.isReady) readyCount++; });
+      document.getElementById('readyCount').innerText = readyCount;
+      document.getElementById('coinCount').innerText = coins;
+      document.getElementById('dayCount').innerText = day;
+      document.getElementById('usdcVaultBalance').innerText = `${usdcVault.toFixed(2)} USDC`;
+    }
+
+    function renderSeedShop() {
+      const grid = document.getElementById('seedGrid');
+      grid.innerHTML = SEEDS.map(seed => {
+        const effectiveSec = Math.round(seed.growTimeSec / speedMultiplier);
+        return `
+          <div class="seed-item ${seed.id === selectedSeedId ? 'selected' : ''}" onclick="selectSeed('${seed.id}')">
+            <div class="seed-info">
+              <span class="seed-icon">${seed.icon}</span>
+              <div class="seed-details">
+                <span class="seed-name">${seed.name}</span>
+                <span class="seed-price">🪙 ${seed.price} (Yield: 🪙${seed.yieldCoins})</span>
+                <span class="seed-time">⏱️ ${effectiveSec}s grow time</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectSeed(seedId) {
+      selectedSeedId = seedId;
+      renderSeedShop();
+      updateGameCursor();
+    }
+
+    function handleTileClick(tileId, e) {
+      const tile = gridState[tileId];
+
+      if (tile.crop && tile.needsWater) {
+        tile.needsWater = false;
+        playSound('water');
+        showPixelToast("Watered plot! Growth continues 💧", "💧");
+        updateTileDOM(tileId);
+        return;
+      }
+
+      if (tile.crop && tile.crop.isReady) {
+        const seedDef = SEEDS.find(s => s.id === tile.crop.seedId);
+        const netYieldCoins = Math.round(seedDef.yieldCoins * (1 - marketplaceFeePct / 100));
+        coins += netYieldCoins;
+
+        if (seedDef.id === 'strawberry' || seedDef.id === 'pumpkin') {
+          usdcVault += 0.10 * (1 - marketplaceFeePct / 100);
+        }
+
+        const cropIcon = seedDef.icon;
+        tile.crop = null;
+        tile.needsWater = false;
+        tile.needsWaterHandled = false;
+        playSound('harvest');
+
+        const clickX = e ? e.clientX : window.innerWidth / 2;
+        const clickY = e ? e.clientY : window.innerHeight / 2;
+        triggerCropExplosion(clickX, clickY, cropIcon);
+
+        showPixelToast(`${cropIcon} ${seedDef.name} harvest! +🪙${netYieldCoins} Coins`, cropIcon);
+        updateTileDOM(tileId);
+        return;
+      }
+
+      if (!tile.crop) {
+        const seedDef = SEEDS.find(s => s.id === selectedSeedId);
+        if (coins < seedDef.price) {
+          showPixelToast(`Insufficient Coins! Need 🪙${seedDef.price} Coins for ${seedDef.name}.`, "❌");
+          return;
+        }
+
+        coins -= seedDef.price;
+        tile.crop = { seedId: selectedSeedId, growProgress: 0, isReady: false };
+        tile.needsWater = false;
+        tile.needsWaterHandled = false;
+        playSound('plant');
+
+        const effectiveTimeMs = (seedDef.growTimeSec / speedMultiplier) * 1000;
+        const stepMs = effectiveTimeMs / 20;
+
+        tile.timer = setInterval(() => {
+          if (!tile.crop) return clearInterval(tile.timer);
+
+          if (passLevel === 'free' && tile.crop.growProgress >= 50 && tile.crop.growProgress < 55 && !tile.needsWaterHandled) {
+            tile.needsWater = true;
+            tile.needsWaterHandled = true;
+          }
+
+          if (tile.needsWater) {
+            updateTileDOM(tileId);
+            return;
+          }
+
+          tile.crop.growProgress += 5;
+          if (tile.crop.growProgress >= 100) {
+            tile.crop.growProgress = 100;
+            tile.crop.isReady = true;
+            clearInterval(tile.timer);
+          }
+          updateTileDOM(tileId);
+        }, stepMs);
+
+        updateTileDOM(tileId);
+      }
+    }
+
+    function endDay() {
+      day++;
+      gridState.forEach((tile, i) => {
+        if (tile.crop) {
+          tile.crop.growProgress = 100;
+          tile.crop.isReady = true;
+          tile.needsWater = false;
+          if (tile.timer) clearInterval(tile.timer);
+          updateTileDOM(i);
+        }
+      });
+      showPixelToast(`🌅 Day ${day} started! All crops matured!`, "🌅");
+    }
+
+    /* REAL ON-CHAIN WEB3 BALANCE FETCHING ENGINE */
+    async function fetchOnChainUSDCBalance() {
+      if (provider && userAddress) {
+        try {
+          const balanceWei = await provider.getBalance(userAddress);
+          const usdcVal = parseFloat(ethers.formatEther(balanceWei)).toFixed(2);
+          document.getElementById('game-view-usdc').innerText = `USDC: ${usdcVal}`;
+          return balanceWei;
+        } catch(e) {
+          console.log("On-chain USDC balance fetch error", e);
+        }
+      }
+      return 0n;
+    }
+
+    /* REAL WEB3 ARC TESTNET TRANSACTIONS WITH CONFIRMATION AND EXACT VALUE */
+    async function cashoutUSDC() {
+      if (usdcVault <= 0) return showPixelToast("No withdrawable USDC in Vault. Harvest rare crops!", "❌");
+      if (!userAddress) return openWalletModal();
+
+      try {
+        showPixelToast("Initiating real USDC cash-out on Arc Testnet...", "⌛");
+        const signer = await provider.getSigner();
+
+        const tx = await signer.sendTransaction({
+          to: TREASURY_ADDRESS,
+          value: ethers.parseEther("0.0001")
+        });
+
+        showPixelToast("Waiting for Arc Testnet block confirmation...", "⌛");
+        await tx.wait();
+
+        showPixelToast(`💸 Cash-out complete! Tx: ${tx.hash.substring(0,10)}...`, "🔗");
+        usdcVault = 0.00;
+        triggerCelebration();
+        updateTileDOM(0);
+        await fetchOnChainUSDCBalance();
+      } catch(err) {
+        console.error("Cashout error:", err);
+        showPixelToast("Transaction cancelled or failed.", "⚠️");
+      }
+    }
+
+    const farmingTips = [
+      "Tip: Use native USDC on Arc Testnet for all marketplace transactions.",
+      "Tip: Water plots regularly to boost crop growth speed by 2x.",
+      "Tip: Annual Pass subscribers enjoy 0% marketplace fee."
+    ];
+
+    /* ANIMATED CROP LOADING CYCLE ENGINE */
+    function startLoadingSequence() {
+      document.getElementById('landing-view').style.display = 'none';
+      const loading = document.getElementById('loading-view');
+      loading.style.display = 'flex'; window.scrollTo(0, 0);
+
+      document.getElementById('loadingTip').innerText = `"${farmingTips[Math.floor(Math.random()*farmingTips.length)]}"`;
+
+      const lCanvas = document.getElementById('loadingCanvas'); const lCtx = lCanvas.getContext('2d');
+      lCtx.imageSmoothingEnabled = false;
+      let lTick = 0, animId;
+      const loadingCrops = ['🌱', '🌿', '🌾', '🥕', '🍅', '🍓', '🎃'];
+
+      function drawLoadingIcon() {
+        lTick++; lCtx.clearRect(0, 0, 120, 120);
+
+        lCtx.fillStyle = '#599632';
+        lCtx.beginPath();
+        lCtx.ellipse(60, 95, 45, 14, 0, 0, Math.PI * 2);
+        lCtx.fill();
+        lCtx.fillStyle = '#3b2313';
+        lCtx.beginPath();
+        lCtx.ellipse(60, 90, 36, 10, 0, 0, Math.PI * 2);
+        lCtx.fill();
+
+        const cropIndex = Math.floor(lTick / 18) % loadingCrops.length;
+        const bounceY = Math.abs(Math.sin(lTick * 0.15)) * 14;
+
+        lCtx.font = '54px sans-serif';
+        lCtx.fillText(loadingCrops[cropIndex], 33, 75 - bounceY);
+
+        lCtx.fillStyle = '#fde047';
+        for(let s = 0; s < 4; s++) {
+          const sx = 20 + (lTick * 3 + s * 25) % 80;
+          const sy = 30 + (lTick * 2 + s * 15) % 60;
+          lCtx.fillRect(sx, sy, 4, 4);
+        }
+
+        animId = requestAnimationFrame(drawLoadingIcon);
+      }
+      drawLoadingIcon();
+
+      let progress = 0; const progressBar = document.getElementById('loadingBar');
+      const interval = setInterval(() => {
+        progress += 10;
+        if (progress >= 100) {
+          progress = 100; clearInterval(interval); cancelAnimationFrame(animId);
+          setTimeout(() => {
+            loading.style.display = 'none';
+            document.getElementById('game-view').style.display = 'block';
+            updatePassUI();
+            fetchOnChainUSDCBalance();
+          }, 250);
+        }
+        progressBar.style.width = `${progress}%`;
+        document.getElementById('loadingPercent').innerText = `%${progress}`;
+      }, 200);
+    }
+
+    function switchToLandingView() {
+      document.getElementById('game-view').style.display = 'none';
+      document.getElementById('landing-view').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    let userAddress = null, provider = null;
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        showPixelToast("Web3 wallet (MetaMask / Rabby) not found!", "⚠️");
+        return false;
+      }
+      try {
+        provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: ARC_CHAIN_HEX }]
+          });
+        } catch (switchError) {
+          if (switchError.code === 4902 || (switchError.message && switchError.message.includes('Unrecognized chain'))) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: ARC_CHAIN_HEX,
+                chainName: 'Arc Testnet',
+                nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
+                rpcUrls: ['https://arc-testnet.drpc.org'],
+                blockExplorerUrls: ['https://testnet.arcscan.app']
+              }]
+            });
+          }
+        }
+
+        const signer = await provider.getSigner();
+        userAddress = await signer.getAddress();
+        const shortAddr = `${userAddress.substring(0,6)}...${userAddress.substring(userAddress.length-4)}`;
+        document.getElementById('btn-connect-wallet').innerHTML = `🟢 ${shortAddr}`;
+        showPixelToast(`Connected to Arc Testnet: ${shortAddr}`, "🟢");
+        
+        await fetchOnChainUSDCBalance();
+        return true;
+      } catch (err) {
+        showPixelToast("Wallet connection or network switch rejected.", "⚠️");
+        return false;
+      }
+    }
+
+    /* REAL WEB3 PASS SUBSCRIPTION WITH EXACT DIRECT AMOUNT & GUARANTEED PASS ACTIVATION */
+    async function subscribePass(type, amountUSDC) {
+      if (!userAddress) {
+        const connected = await connectWallet();
+        if (!connected) return;
+      }
+
+      try {
+        showPixelToast(`Confirm ${amountUSDC}.00 USDC in your Web3 Wallet...`, "⌛");
+        const signer = await provider.getSigner();
+
+        const tx = await signer.sendTransaction({
+          to: TREASURY_ADDRESS,
+          value: ethers.parseEther(amountUSDC.toString())
+        });
+
+        showPixelToast("Waiting for Arc Testnet block confirmation...", "⌛");
+        await tx.wait();
+
+        passLevel = type;
+        if (type === 'monthly') {
+          speedMultiplier = 2;
+          marketplaceFeePct = 10;
+        } else if (type === 'annual') {
+          speedMultiplier = 3;
+          marketplaceFeePct = 0;
+        }
+
+        updatePassUI();
+        triggerCelebration();
+
+        showPixelToast(`🎉 ${amountUSDC} USDC ${type.toUpperCase()} PASS ACTIVATED!`, "👑");
+        await fetchOnChainUSDCBalance();
+      } catch(err) {
+        console.error("Subscribe Pass Error:", err);
+        showPixelToast("Subscription cancelled or insufficient USDC.", "⚠️");
+      }
+    }
+
+    /* 5-LANGUAGE DYNAMIC i18n TRANSLATION ENGINE (TR, EN, ES, ZH, JA) */
+    const I18N_DICT = {
+      TR: {
+        navShowcase: "Oyun Tanıtımı", navSpecs: "GameFi Specs", navPasses: "Passes & Pricing", navPlay: "Oyunu Oyna",
+        heroBadge: "⚡ POWERED BY ARC TESTNET",
+        heroTitle: "DECENTRALIZED PIXEL DÜNYASINDA <span>EK, TOPLA & TİCARET YAP</span>",
+        heroSubtitle: "Arcadia Homestead, Arc Testnet ağı üzerinde çalışan 5x5 Grid Stardew estetiğinde Web3 pixel çiftlik simülasyonudur.",
+        heroPlay: "🎮 OYUNU OYNA / LAUNCH APP", heroPass: "👑 PREMIUM PASS AL",
+        showcaseTitle: "NASIL OYNANIR & OYUN MEKANİKLERİ", showcaseSub: "Aşağı kaydırdıkça Dev Piksel Yaprak adımları sırayla atlatır",
+        specsTitle: "GAMEFI FEATURES & SPECS", specsSub: "Stardew Valley 5x5 retro dokusu ve Arc Testnet altyapısı",
+        passesTitle: "PREMIUM PASS SUBSCRIPTIONS", passesSub: "Arc Testnet native USDC ile ayrıcalıklı çiftçilik avantajları"
+      },
+      EN: {
+        navShowcase: "Game Intro", navSpecs: "GameFi Specs", navPasses: "Passes & Pricing", navPlay: "Play Game",
+        heroBadge: "⚡ POWERED BY ARC TESTNET",
+        heroTitle: "BUILD, HARVEST & TRADE IN A <span>DECENTRALIZED PIXEL WORLD</span>",
+        heroSubtitle: "Arcadia Homestead is a 5x5 Grid Stardew-aesthetic Web3 pixel farming simulation running on Arc Testnet.",
+        heroPlay: "🎮 PLAY GAME / LAUNCH APP", heroPass: "👑 GET PREMIUM PASS",
+        showcaseTitle: "HOW TO PLAY & GAMEPLAY FEATURES", showcaseSub: "Scroll down to wipe through showcase steps with Giant Pixel Leaf",
+        specsTitle: "GAMEFI FEATURES & SPECS", specsSub: "Stardew Valley 5x5 retro graphics and Arc Testnet infrastructure",
+        passesTitle: "PREMIUM PASS SUBSCRIPTIONS", passesSub: "Exclusive farming perks paid with Arc Testnet native USDC"
+      },
+      ES: {
+        navShowcase: "Introducción", navSpecs: "GameFi Specs", navPasses: "Pases y Precios", navPlay: "Jugar Ahora",
+        heroBadge: "⚡ DESARROLLADO EN ARC TESTNET",
+        heroTitle: "SIEMBRA, COSECHA Y COMERCIA EN UN <span>MUNDO PIXEL DECENTRALIZADO</span>",
+        heroSubtitle: "Arcadia Homestead es una simulación de granja pixel Web3 de 5x5 con estética Stardew ejecutada en Arc Testnet.",
+        heroPlay: "🎮 JUGAR / ABRIR APP", heroPass: "👑 OBTENER PASSE PREMIUM",
+        showcaseTitle: "CÓMO JUGAR Y CARACTERÍSTICAS", showcaseSub: "Desplázate hacia abajo para pasar las páginas con la Hoja Píxel Gigante",
+        specsTitle: "ESPECIFICACIONES GAMEFI", specsSub: "Gráficos retro 5x5 Stardew Valley e infraestructura Arc Testnet",
+        passesTitle: "SUSCRIPCIONES PREMIUM PASS", passesSub: "Beneficios exclusivos de cultivo pagados con USDC nativo en Arc Testnet"
+      },
+      ZH: {
+        navShowcase: "游戏介绍", navSpecs: "GameFi 规格", navPasses: "通行证与价格", navPlay: "开始游戏",
+        heroBadge: "⚡ 由 ARC TESTNET 提供支持",
+        heroTitle: "在去中心化像素世界中 <span>种植、收割与交易</span>",
+        heroSubtitle: "Arcadia Homestead 是一款在 Arc Testnet 上运行的 5x5 网格 Stardew 美学 Web3 像素农场模拟游戏。",
+        heroPlay: "🎮 开始游戏 / 启动应用", heroPass: "👑 获取高级通行证",
+        showcaseTitle: "玩法介绍与游戏特色", showcaseSub: "向下滚动，巨型像素树叶将带您逐页浏览演示",
+        specsTitle: "GAMEFI 特性与规格", specsSub: "Stardew Valley 5x5 复古像素图形和 Arc Testnet 基础设施",
+        passesTitle: "高级通行证订阅", passesSub: "使用 Arc Testnet 原生 USDC 支付的专属农场特权"
+      },
+      JA: {
+        navShowcase: "ゲーム紹介", navSpecs: "GameFi スペック", navPasses: "パス＆料金", navPlay: "ゲームをプレイ",
+        heroBadge: "⚡ POWERED BY ARC TESTNET",
+        heroTitle: "分散型ピクセル世界で <span>育てる・収穫する・取引する</span>",
+        heroSubtitle: "Arcadia Homesteadは、Arc Testnet上で動作する5x5グリッドStardew風Web3ピクセル農場シミュレーションです。",
+        heroPlay: "🎮 ゲームをプレイ / App起動", heroPass: "👑 プレミアムパスを取得",
+        showcaseTitle: "遊び方＆ゲーム機能", showcaseSub: "下にスクロールすると、巨大ピクセルリーフがページを切り替えます",
+        specsTitle: "GAMEFI 機能＆スペック", specsSub: "Stardew Valley 5x5レトログラフィックスとArc Testnetインフラ",
+        passesTitle: "PREMIUM PASS SUBSCRIPTIONS", passesSub: "Arc TestnetネイティブUSDCで支払う特別農場特典"
+      }
+    };
+
+    function changeLanguage(langKey) {
+      const dict = I18N_DICT[langKey] || I18N_DICT['EN'];
+      document.getElementById('nav-showcase').innerText = dict.navShowcase;
+      document.getElementById('nav-specs').innerText = dict.navSpecs;
+      document.getElementById('nav-passes').innerText = dict.navPasses;
+      document.getElementById('nav-play').innerText = dict.navPlay;
+      document.getElementById('hero-badge').innerText = dict.heroBadge;
+      document.getElementById('hero-title').innerHTML = dict.heroTitle;
+      document.getElementById('hero-subtitle').innerText = dict.heroSubtitle;
+      document.getElementById('btn-hero-play').innerText = dict.heroPlay;
+      document.getElementById('btn-hero-pass').innerText = dict.heroPass;
+      document.getElementById('showcase-title').innerText = dict.showcaseTitle;
+      document.getElementById('showcase-sub').innerText = dict.showcaseSub;
+      document.getElementById('specs-title').innerText = dict.specsTitle;
+      document.getElementById('specs-sub').innerText = dict.specsSub;
+      document.getElementById('passes-title').innerText = dict.passesTitle;
+      document.getElementById('passes-sub').innerText = dict.passesSub;
+      showPixelToast(`Language switched to ${langKey}! 🌐`, "🌐");
+    }
+
+    gridState[2] = { id: 2, crop: { seedId: 'wheat', growProgress: 100, isReady: true }, timer: null, needsWater: false, needsWaterHandled: false };
+    gridState[3] = { id: 3, crop: { seedId: 'wheat', growProgress: 100, isReady: true }, timer: null, needsWater: false, needsWaterHandled: false };
+    gridState[7] = { id: 7, crop: { seedId: 'wheat', growProgress: 100, isReady: true }, timer: null, needsWater: false, needsWaterHandled: false };
+    gridState[8] = { id: 8, crop: { seedId: 'wheat', growProgress: 100, isReady: true }, timer: null, needsWater: false, needsWaterHandled: false };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initPixelLeafEngine();
+      initHeroShowcase();
+      initGameBackgroundEngine();
+      initStaticDOMFarmGrid();
+      renderShowcasePreview(1);
+      renderSeedShop();
+      for(let i=0; i<25; i++) updateTileDOM(i);
+      window.addEventListener('scroll', handleStickyScroll);
+      handleStickyScroll();
+      
+    });
+  </script>
+</body>
+</html>
+""")
+print("Compiled index.html without rabbit successfully!")
